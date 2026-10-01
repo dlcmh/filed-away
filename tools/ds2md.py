@@ -467,6 +467,55 @@ def derive_title(soup):
     return raw or "Untitled conversation"
 
 
+# Conversational openers that make poor titles ("how is it that…",
+# "can you tell me why…"). Stripped before deriving a short title.
+OPENERS = re.compile(
+    r"^(?:please|hey|hi|hello|ok(?:ay)?|so|well|and|but|also|now)[,.\s]+"
+    r"|^(?:how is it that|how come|is it (?:true|correct) that|why is it that"
+    r"|can you (?:please )?(?:explain|tell me|clarify)(?: (?:to me))?(?: (?:why|how|what|whether))?[?,.]?"
+    r"|could you [^,.;:?!\n]+[,.]?"
+    r"|i(?:'m| am) (?:wondering|curious)[,.]?"
+    r"|do you know (?:why|how|whether|if)"
+    r"|what(?:'s| is) (?:the difference between|the reason (?:why|for)))\s*",
+    re.I,
+)
+
+SHORT_TITLE_CAP = 60
+
+# a cut title must not end on a dangling function word
+TRAILING_FILL = re.compile(
+    r"\s+(?:for|or|and|but|the|a|an|of|to|in|on|at|with|that|is|are|was|were"
+    r"|it|its|as|by|from|not|vs\.?|if|then|than|so|because|when|while)$",
+    re.I,
+)
+
+
+def derive_short_title(question):
+    """A title from the first user message: openers stripped, then either the
+    first short sentence or a word-boundary cut at the cap."""
+    t = collapse(question).strip()
+    for _ in range(3):
+        t2 = OPENERS.sub("", t, count=1).strip()
+        if not t2 or t2 == t:
+            break
+        t = t2
+    m = re.match(r"^(.{10,%d}?[.?!;])(?:\s|$)" % SHORT_TITLE_CAP, t)
+    if m:
+        t = m.group(1)
+    elif len(t) > SHORT_TITLE_CAP:
+        cut = t[:SHORT_TITLE_CAP]
+        t = cut[: cut.rfind(" ")] if " " in cut else cut
+    t = t.strip().rstrip("?.!;:,")
+    while True:
+        t2 = TRAILING_FILL.sub("", t)
+        if t2 == t:
+            break
+        t = t2
+    if t:
+        t = t[0].upper() + t[1:]
+    return t
+
+
 def slugify(title):
     s = re.sub(r"[^\w\- ]", "", title).strip().lower().replace(" ", "-")
     return s or "transcript"
@@ -532,7 +581,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("input", type=Path, help="DeepSeek chat HTML export (shared page or app page)")
     ap.add_argument("-o", "--out-dir", type=Path, required=True, help="transcript folder to create, e.g. glm/")
-    ap.add_argument("--name", help="transcript filename slug (default: from the page title)")
+    ap.add_argument("--title", help="transcript title (default: derived from the first user message)")
+    ap.add_argument("--name", help="filename slug override (default: slugified title)")
     ap.add_argument("--description", help="one-line editorial summary shown under the title")
     ap.add_argument("--source-url", help="override the source link (default: og:url meta)")
     ap.add_argument("--images-dir", default="images", help="subfolder for attachments (default: images)")
@@ -571,9 +621,14 @@ def main():
     # pass 2: render
     parts = []
     n_user = n_asst = 0
+    first_question = ""
     for role, div, atts in prepared:
         if role == "user":
             n_user += 1
+            if not first_question:
+                coll = div.select_one(".ds-collapsible-text")
+                if coll is not None:
+                    first_question = collapse(coll.get_text()).strip()
             blocks = render_user_message(div, atts, args.images_dir)
             parts.append("## User\n\n" + "\n\n".join(blocks))
         else:
@@ -592,8 +647,15 @@ def main():
     alts = " ".join(a["alt"] for a in ALL_ATTS)
     dates = sorted(set(re.findall(r"20\d{2}-\d{2}-\d{2}", alts)))
 
-    title = args.name and args.name or derive_title(soup)
+    page_title = derive_title(soup)
+    if args.title:
+        title, title_src = args.title, "--title flag"
+    elif first_question:
+        title, title_src = derive_short_title(first_question), "first user message"
+    else:
+        title, title_src = page_title, "page title"
     slug = slugify(args.name or title)
+    print(f"title: {title!r} (from {title_src}); page title was: {page_title!r}")
     header = build_header(args, title, og_url, dates, n_user, n_asst)
     md = "\n\n---\n\n".join([header] + parts) + "\n"
 

@@ -20,13 +20,30 @@ python3 -m venv /tmp/dsenv
 
 ```sh
 /tmp/dsenv/bin/python tools/ds2md.py ~/Desktop/chat.html -o glm/ \
+    --title "HS math gap: CS vs ML" \
     --description "One-line summary of what the conversation covers"
 ```
 
-Outputs `<out-dir>/<slug>.md` (slug derived from the page title, e.g.
+Outputs `<out-dir>/<slug>.md` (slug derived from the title, e.g.
 `into-the-unknown.md`) and downloads attachments into `<out-dir>/images/`.
-Options: `--name` (override slug), `--source-url`, `--title`-style overrides,
+Options: `--title`, `--name` (filename slug override), `--source-url`,
 `--skip-images`. The script prints a self-check report at the end:
+
+## Title
+
+The H1 title (and the filename slug, unless `--name` is given) are chosen in
+this order:
+
+1. `--title "…"` — preferred: a short, descriptive title derived by the agent
+   running the conversion (a few words, e.g. "HS math gap: CS vs ML").
+2. Derived from the first user message: conversational openers stripped
+   ("how is it that…", "can you tell me why…"), then the first short sentence
+   or a 60-character word-boundary cut with dangling function words trimmed.
+3. The page `<title>` as a last resort — DeepSeek auto-titles are poetic
+   ("Into the Unknown"), so it is rarely what you want.
+
+The script logs which source produced the title alongside the page title, so
+the choice is visible in the run output.
 
 - math fidelity — every LaTeX formula emitted is multiset-identical to the
   source annotations

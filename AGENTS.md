@@ -11,6 +11,10 @@ on github.com.
    options, and self-checks are documented in `tools/README.md`. Do not
    hand-transcribe: the script preserves math, spacing, and tables
    byte-faithfully and verifies its own output.
+2. Pass a short, descriptive `--title` derived from the conversation (a few
+   words, e.g. "HS math gap: CS vs ML"). The script's automatic fallbacks —
+   first-question heuristic, then the page title — are stopgaps; DeepSeek's
+   own titles are auto-generated poetry. See `tools/README.md` → Title.
 2. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
 3. Choose the output folder name with the user (existing convention: one
