@@ -364,9 +364,9 @@ The variable **$a_{ij}$** (the amount of resource $i$ needed for one unit of pro
 
 If you want to produce $x_4$ blue hairpins and $x_5$ lavender hairpins, the equation for your **Blue Dye ($R_3$)** resource would look like this:
 
-$$
+```math
 a_{3,1}x_1 + a_{3,2}x_2 + a_{3,3}x_3 + a_{3,4}x_4 + 0 \cdot x_5 = b_3
-$$
+```
 
 Because $a_{3,5} = 0$, the lavender hairpins don't consume any blue dye. The math naturally filters out the resource constraints that don't apply to a specific product.
 
@@ -376,9 +376,9 @@ Your hairpin example perfectly illustrates why this math is the foundation for M
 
 In a real factory, you might have 50 different hairpin colors and 20 different resources. Writing out 20 equations with 50 variables is tedious, which is why we use matrices:
 
-$$
+```math
 A\mathbf{x} = \mathbf{b}
-$$
+```
 
 - **$A$** is the "Recipe Matrix" (how much of each resource each hairpin needs).
 - **$\mathbf{x}$** is the "Production Plan" (how many blue, how many lavender).
@@ -612,15 +612,15 @@ The Matrix $A$ looks like this:
 
 Mathematically, this is:
 
-$$
+```math
 A = \begin{bmatrix} 2 & 2 \\ 1 & 1 \\ 3 & 0 \\ 0 & 4 \end{bmatrix}
-$$
+```
 
 If you want to produce $x_1$ blue hairpins and $x_2$ lavender hairpins, your system of equations ($A\mathbf{x} = \mathbf{b}$) is:
 
-$$
+```math
 \begin{bmatrix} 2 & 2 \\ 1 & 1 \\ 3 & 0 \\ 0 & 4 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \\ b_4 \end{bmatrix}
-$$
+```
 
 Which translates to these four "conservation statements":
 
@@ -910,9 +910,9 @@ $= 4(\frac{y_1 - y_2}{2}) = 2y_1 - 2y_2$
 
 The new system $A'\mathbf{y} = \mathbf{b}$ looks like this:
 
-$$
+```math
 \begin{bmatrix} 2 & 0 \\ 1 & 0 \\ 1.5 & 1.5 \\ 2 & -2 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \\ b_4 \end{bmatrix}
-$$
+```
 
 Notice what happened:
 
@@ -1095,9 +1095,9 @@ Let's say you want to predict house prices. You have 3 houses (3 rows, $i=1,2,3$
 
 Your equation $A\mathbf{x} = \mathbf{b}$ becomes:
 
-$$
+```math
 \begin{bmatrix} a_{1,1} & a_{1,2} \\ a_{2,1} & a_{2,2} \\ a_{3,1} & a_{3,2} \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix}
-$$
+```
 
 - **$x_1$** = Square Footage (known data)
 - **$x_2$** = Number of Bedrooms (known data)
@@ -1180,17 +1180,17 @@ I guess an AI weather predictor like the one Huawei has doesn’t make use of Ax
 
 ## DeepSeek
 
-Your intuition is partially correct, but the reality is more nuanced. Pangu-Weather *does* use something that looks very much like a massive, generalized version of \(A\mathbf{x} = \mathbf{b}\). However, it solves it in a completely different way than the MRP system you described.
+Your intuition is partially correct, but the reality is more nuanced. Pangu-Weather *does* use something that looks very much like a massive, generalized version of \\(A\mathbf{x} = \mathbf{b}\\). However, it solves it in a completely different way than the MRP system you described.
 
-### 🧠 The "Transformer" and \(A\mathbf{x} = \mathbf{b}\)
+### 🧠 The "Transformer" and \\(A\mathbf{x} = \mathbf{b}\\)
 
-In your MRP example, you decided the matrix \(A\) by defining the recipes for blue and lavender hairpins. In Pangu-Weather, the "recipes" are not handwritten. The model is **trained** on 43 years of global weather data, which includes variables like temperature, humidity, and wind at 13 different pressure levels [[1]](https://ar5iv.labs.arxiv.org/html/2211.02556#1)[[9]](https://www.huaweicloud.com/cloudplus/seventeenthphase/detail06.html#1).
+In your MRP example, you decided the matrix \\(A\\) by defining the recipes for blue and lavender hairpins. In Pangu-Weather, the "recipes" are not handwritten. The model is **trained** on 43 years of global weather data, which includes variables like temperature, humidity, and wind at 13 different pressure levels [[1]](https://ar5iv.labs.arxiv.org/html/2211.02556#1)[[9]](https://www.huaweicloud.com/cloudplus/seventeenthphase/detail06.html#1).
 
 The result is a **massive matrix of 64 million parameters** (the weights of the neural network) [[10]](https://link.springer.com/article/10.1038/s41586-023-06185-3?fromPaywallRec=true#1). This matrix is the learned "recipe" for how the atmosphere works. When Pangu-Weather makes a forecast, it is essentially performing:
 
-- **\(\mathbf{b}\)**: The current state of the atmosphere
-- **\(A\)**: The 64 million learned weights (the model)
-- **\(\mathbf{x}\)**: The predicted state of the atmosphere in the future
+- **\\(\mathbf{b}\\)**: The current state of the atmosphere
+- **\\(A\\)**: The 64 million learned weights (the model)
+- **\\(\mathbf{x}\\)**: The predicted state of the atmosphere in the future
 
 The architecture, called a "3D Earth-Specific Transformer," is just a very complex way of calculating this transformation [[1]](https://ar5iv.labs.arxiv.org/html/2211.02556#1)[[9]](https://www.huaweicloud.com/cloudplus/seventeenthphase/detail06.html#1).
 
@@ -1198,8 +1198,8 @@ The architecture, called a "3D Earth-Specific Transformer," is just a very compl
 
 The key difference lies in **how the matrix is determined** and **what the "rows" represent**:
 
-- **Your MRP system**: You manually design \(A\). It's a set of hard constraints (you cannot use more plastic than you have). The goal is to find the *optimal* production plan (\(\mathbf{x}\)) under those constraints.
-- **Pangu-Weather**: The matrix \(A\) is learned from data. It is a statistical approximation of atmospheric physics. It doesn't solve a "planning" problem; it makes a "prediction."
+- **Your MRP system**: You manually design \\(A\\). It's a set of hard constraints (you cannot use more plastic than you have). The goal is to find the *optimal* production plan (\\(\mathbf{x}\\)) under those constraints.
+- **Pangu-Weather**: The matrix \\(A\\) is learned from data. It is a statistical approximation of atmospheric physics. It doesn't solve a "planning" problem; it makes a "prediction."
 
 So, while it doesn't solve a system of equations you wrote down by hand, it is fundamentally built on the same mathematical backbone: **Transforming a vector of inputs into a vector of outputs using a matrix.**
 
@@ -1207,7 +1207,7 @@ So, while it doesn't solve a system of equations you wrote down by hand, it is f
 
 The search results highlight this distinction clearly. Traditional weather prediction solves the physical equations of fluid dynamics numerically. AI models like Pangu-Weather **don't solve those equations**—they learn patterns from historical data and predict what happens next [[3]](https://www.dwd.de/DE/wetter/thema_des_tages/2026/7/21.html)[[16]](https://www.huaweicloud.com/cloudplus/twentiethphase/detail09.html).
 
-Your \(A\mathbf{x} = \mathbf{b}\) intuition is actually the right bridge: Pangu-Weather is a *learned* version of that equation, where the matrix is enormous and the goal is prediction rather than planning.
+Your \\(A\mathbf{x} = \mathbf{b}\\) intuition is actually the right bridge: Pangu-Weather is a *learned* version of that equation, where the matrix is enormous and the goal is prediction rather than planning.
 
 ---
 
@@ -1229,9 +1229,9 @@ In the standard notation $A\mathbf{x} = \mathbf{b}$:
 
 So for Pangu-Weather, it should be:
 
-$$
+```math
 A \cdot \mathbf{x}_{\text{current}} = \mathbf{b}_{\text{future}}
-$$
+```
 
 Where:
 
@@ -1626,9 +1626,9 @@ Let's say you now produce:
 
 Your old "production plan" vector was a 2D list: $(x_1, x_2)$. Now it's a **5D vector**:
 
-$$
+```math
 \mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \end{bmatrix}
-$$
+```
 
 You cannot draw this on a 2D graph. But mathematically, it is still a vector, and you can still rotate it.
 
@@ -1652,9 +1652,9 @@ You are still just finding a new set of axes (a new basis) that makes the proble
 In 2D, the rotation matrix was $2 \times 2$.\
 In 5D, the rotation matrix is $5 \times 5$. It has 25 entries instead of 4.
 
-$$
+```math
 A = \begin{bmatrix} a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} & a_{1,5} \\ a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4} & a_{2,5} \\ a_{3,1} & a_{3,2} & a_{3,3} & a_{3,4} & a_{3,5} \\ a_{4,1} & a_{4,2} & a_{4,3} & a_{4,4} & a_{4,5} \\ a_{5,1} & a_{5,2} & a_{5,3} & a_{5,4} & a_{5,5} \end{bmatrix}
-$$
+```
 
 This matrix is called an **orthogonal matrix**. It has a special property: its columns are all perpendicular to each other, and each column has length 1. This is what makes it a pure rotation (no stretching or squishing).
 
@@ -1730,9 +1730,9 @@ Once you decide $a$ (how many Red Hairpins you want), the factory *must* produce
 
 The scary-looking formula at the bottom is just a **recipe for your production plan**:
 
-$$
+```math
 \left( \frac{5}{2} - \frac{3}{2}a, \quad \frac{1}{2} + \frac{1}{2}a, \quad a \right)
-$$
+```
 
 Let's translate it:
 
@@ -1783,9 +1783,9 @@ Let me break down what "smallest weights" actually means in each case.
 
 This is the most common form. It says: *"Find the solution where the sum of the **squares** of all weights is minimized."*
 
-$$
+```math
 \text{Minimize: } w_1^2 + w_2^2 + w_3^2 + \dots
-$$
+```
 
 This is your "minimum value of all weights added together" intuition, but with squares. Why squares? Because it treats positive and negative weights equally. A weight of $-5$ is just as "large" as a weight of $+5$. Squaring them both gives $25$.
 
@@ -1795,9 +1795,9 @@ This is your "minimum value of all weights added together" intuition, but with s
 
 This one says: *"Find the solution where the sum of the **absolute values** of all weights is minimized."*
 
-$$
+```math
 \text{Minimize: } |w_1| + |w_2| + |w_3| + \dots
-$$
+```
 
 This is your "absolute count" intuition.
 
@@ -1824,9 +1824,9 @@ Imagine you have 5 hairpin colors, but your data only has 3 useful constraints. 
 
 In modern ML (especially deep learning), people often use **Elastic Net**, which is a combination of both:
 
-$$
+```math
 \text{Minimize: } \lambda_1 \sum |w_i| + \lambda_2 \sum w_i^2
-$$
+```
 
 ### The Punchline
 
@@ -1880,9 +1880,9 @@ Then back-substitute to find $x_2$:
 
 So the solution set is:
 
-$$
+```math
 \left( b, \quad \frac{4}{3} - \frac{1}{3}b, \quad \frac{5}{3} - \frac{2}{3}b \right)
-$$
+```
 
 **This is the exact same infinite set of solutions.** It just looks different because we parameterized it with $b$ instead of $a$. If you set $b = \frac{5}{2} - \frac{3}{2}a$, you get back the exact same triplet as the book.
 
@@ -1896,9 +1896,9 @@ $$
 
 The rule is:
 
-$$
+```math
 \text{Number of Free Variables} = \text{Number of Unknowns} - \text{Number of Independent Equations}
-$$
+```
 
 In this example:
 
@@ -1910,9 +1910,9 @@ So here, exactly **one** free variable.
 
 But let's change the scenario. Suppose you only had **one** equation:
 
-$$
+```math
 x_1 + x_2 + x_3 = 3
-$$
+```
 
 Now:
 
