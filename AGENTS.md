@@ -1,9 +1,11 @@
 # AGENTS.md
 
 This repository holds faithful Markdown transcripts of AI chat conversations.
-One folder per transcript (e.g. `deepseek/`, `glm/`), each containing a single
-`.md` file and its images under `images/`. Transcripts must render correctly
-on github.com.
+Transcripts live in collection folders (e.g. `deepseek/`, `glm/`); each
+conversion creates a subfolder named after the slugified transcript title,
+containing `README.md` (the transcript — GitHub renders it as the subfolder's
+landing page) and `images/` when the conversation has attachments. Transcripts
+must render correctly on github.com.
 
 ## Adding a transcript from a chat HTML export
 
@@ -17,9 +19,9 @@ on github.com.
    own titles are auto-generated poetry. See `tools/README.md` → Title.
 2. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
-3. Choose the output folder name with the user (existing convention: one
-   folder per transcript). Never rename or restructure existing folders —
-   transcripts are addressed by path.
+3. Convert into the collection folder the user specifies (`-o glm/`); the
+   script creates the slug-named subfolder itself. Never rename or restructure
+   existing transcript folders — transcripts are addressed by path.
 4. Verify before committing: the script's self-check must pass (math fidelity
    MATCH, balanced `$`, image refs == files on disk), then skim the rendered
    result for anything structural the checks can't see.

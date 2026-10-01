@@ -24,15 +24,17 @@ python3 -m venv /tmp/dsenv
     --description "One-line summary of what the conversation covers"
 ```
 
-Outputs `<out-dir>/<slug>.md` (slug derived from the title, e.g.
-`into-the-unknown.md`) and downloads attachments into `<out-dir>/images/`.
-Options: `--title`, `--name` (filename slug override), `--source-url`,
+Outputs `<out-dir>/<slug>/README.md` (GitHub renders it as the subfolder's
+landing page, so the collection folder reads as an index) and downloads
+attachments into `<out-dir>/<slug>/images/` — only created when the
+conversation actually has attachments. The subfolder name is the slugified
+title (override with `--name`). Other options: `--title`, `--source-url`,
 `--skip-images`. The script prints a self-check report at the end:
 
 ## Title
 
-The H1 title (and the filename slug, unless `--name` is given) are chosen in
-this order:
+The H1 title (and the subfolder name — the slugified title, unless `--name` is
+given) are chosen in this order:
 
 1. `--title "…"` — preferred: a short, descriptive title derived by the agent
    running the conversion (a few words, e.g. "HS math gap: CS vs ML").
