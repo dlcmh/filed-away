@@ -20,8 +20,8 @@ What it does
 
 Usage
 -----
-    python3 tools/build_transcript.py <chat.html> [output.md]
-    python3 tools/build_transcript.py <chat.html> [output.md] --verify
+    python3 deepseek/tools/build_transcript.py <chat.html> [output.md]
+    python3 deepseek/tools/build_transcript.py <chat.html> [output.md] --verify
 
 ``--verify`` re-renders the Markdown through GitHub's own Markdown API and
 compares every rendered expression against the source KaTeX annotation, so a
@@ -36,7 +36,9 @@ import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+# The folder this transcript lives in (deepseek/), which is also where the
+# relative image links in README.md resolve from.
+TRANSCRIPT_ROOT = Path(__file__).resolve().parent.parent
 
 # Conversation images: original DeepSeek file id -> (local file, alt text).
 IMAGE_MAP = {
@@ -708,7 +710,7 @@ def main(argv):
         print(__doc__)
         return 2
     src = Path(positional[0])
-    out = Path(positional[1]) if len(positional) > 1 else REPO_ROOT / "README.md"
+    out = Path(positional[1]) if len(positional) > 1 else TRANSCRIPT_ROOT / "README.md"
     source = src.read_text(encoding="utf-8", errors="replace")
 
     turns, search_count, annotations = build_transcript(source)
