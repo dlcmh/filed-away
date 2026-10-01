@@ -1,0 +1,4 @@
+# ZCode client session state — never commit
+.zcode/
+
+.DS_Store
