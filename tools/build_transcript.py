@@ -11,6 +11,9 @@ What it does
 * Replaces every KaTeX expression with the *original LaTeX* found in its
   ``<annotation encoding="application/x-tex">`` child, emitted as ``$...$``
   (inline) or ``$$...$$`` (display) so github.com renders it with MathJax.
+  Backslash runs are re-escaped because CommonMark consumes them before MathJax
+  sees the text (see ``github_latex``) -- without that, ``\\\\`` row separators
+  arrive as a single backslash and every matrix collapses onto one line.
 * Maps headings, nested lists, tables, bold/italic/code, links, images and
   blockquotes onto their Markdown equivalents.
 * Rewrites conversation image URLs to local files under ``images/``.
@@ -18,6 +21,11 @@ What it does
 Usage
 -----
     python3 tools/build_transcript.py <chat.html> [output.md]
+    python3 tools/build_transcript.py <chat.html> [output.md] --verify
+
+``--verify`` re-renders the Markdown through GitHub's own Markdown API and
+compares every rendered expression against the source KaTeX annotation, so a
+silent degradation (the failure mode that let collapsed matrices ship) is caught.
 """
 
 from __future__ import annotations
@@ -194,6 +202,29 @@ def latex_of(node):
     return None
 
 
+# CommonMark consumes backslash escapes *before* MathJax receives the math text,
+# so a `\\` row separator reaches MathJax as `\` and every matrix row collapses
+# onto one line.  CommonMark maps a run of n backslashes to floor(n/2) (when the
+# next character is punctuation) or ceil(n/2) (otherwise) backslashes, so
+# doubling a run is the exact inverse.  Runs that CommonMark leaves alone are
+# kept as-is, so `\begin`, `\frac` and friends stay readable in the raw file.
+#
+# Do not "simplify" this away: the doubled backslashes are what make the matrices
+# render correctly on github.com.
+ESCAPABLE_PUNCT = set(r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~""")
+
+
+def github_latex(tex: str) -> str:
+    """Re-escape the LaTeX backslash runs that CommonMark would otherwise eat."""
+    def repl(match):
+        run = match.group(0)
+        following = match.string[match.end():match.end() + 1]
+        if len(run) == 1 and following not in ESCAPABLE_PUNCT:
+            return run  # a control word such as \begin survives untouched
+        return "\\" * (2 * len(run))
+    return re.sub(r"\\+", repl, tex)
+
+
 def is_skipped(node: Node) -> bool:
     if node.tag in SKIP_TAGS:
         return True
@@ -223,10 +254,11 @@ def render_inline_node(node: Node) -> str:
 
     if "katex-display" in classes:
         tex = latex_of(node)
-        return f"\n\n$$\n{tex}\n$$\n\n" if tex else ""
+        return f"\n\n$$\n{github_latex(tex)}\n$$\n\n" if tex else ""
     if "katex" in classes:
         tex = latex_of(node)
-        return f"${tex}$" if tex else escape_text(collapse(raw_text(node)))
+        return (f"${github_latex(tex)}$" if tex
+                else escape_text(collapse(raw_text(node))))
 
     if tag in ("strong", "b"):
         return f"**{render_inline(node).strip()}**"
@@ -331,7 +363,7 @@ def render_block(node: Node) -> str:
 
     if "katex-display" in classes:
         tex = latex_of(node)
-        return f"$$\n{tex}\n$$" if tex else ""
+        return f"$$\n{github_latex(tex)}\n$$" if tex else ""
 
     if tag in HEADINGS:
         level = min(HEADINGS[tag] + 1, 6)  # demote: keeps turn markers at `##`
@@ -481,7 +513,7 @@ def build_transcript(source: str):
         if marker:
             search_count += 1
         turns[-1].update(assistant=assistant, search=marker)
-    return turns, search_count
+    return turns, search_count, collect_annotations(tree)
 
 
 HEADER = """\
@@ -525,6 +557,126 @@ The original signed URLs are not stable, so each image is mirrored in
 """
 
 
+def collect_annotations(tree) -> list:
+    """Every KaTeX LaTeX annotation, in document order."""
+    return [raw_text(n).strip() for n in descendants(tree)
+            if n.tag == "annotation" and "tex" in (n.attrs.get("encoding") or "")]
+
+
+def validate_latex(annotations) -> list:
+    """Return the annotations the GitHub escaping trick cannot express.
+
+    A literal ``$`` would confuse the math delimiters, and a trailing backslash
+    would escape the closing delimiter itself.
+    """
+    problems = []
+    for tex in annotations:
+        if "$" in tex:
+            problems.append(("contains a literal $", tex))
+        if tex.endswith("\\"):
+            problems.append(("ends with a backslash", tex))
+    return problems
+
+
+def scan_markdown_math(text: str) -> list:
+    """Extract ``(kind, latex)`` for every math span in Markdown source.
+
+    Fenced code blocks and inline code spans are skipped, because a ``$`` inside
+    them is illustrative text rather than math.
+    """
+    spans = []
+    i, length = 0, len(text)
+    while i < length:
+        if text.startswith("```", i):
+            end = text.find("```", i + 3)
+            i = length if end < 0 else end + 3
+            continue
+        if text[i] == "`":
+            end = text.find("`", i + 1)
+            i = length if end < 0 else end + 1
+            continue
+        if text.startswith("$$", i):
+            end = text.find("$$", i + 2)
+            if end < 0:
+                i += 1
+                continue
+            spans.append(("display", text[i + 2:end].strip()))
+            i = end + 2
+            continue
+        if text[i] == "$" and i + 1 < length and not text[i + 1].isspace():
+            end = text.find("$", i + 1)
+            if end > 0:
+                inner = text[i + 1:end]
+                if inner and not inner[-1].isspace() and "\n" not in inner:
+                    spans.append(("inline", inner.strip()))
+                    i = end + 1
+                    continue
+        i += 1
+    return spans
+
+
+def strip_delimiters(text: str) -> str:
+    if text.startswith("$$") and text.endswith("$$") and len(text) >= 4:
+        return text[2:-2].strip()
+    if text.startswith("$") and text.endswith("$") and len(text) >= 2:
+        return text[1:-1].strip()
+    return text.strip()
+
+
+GITHUB_MARKDOWN_API = "https://api.github.com/markdown"
+
+
+def verify_on_github(markdown: str, annotations) -> int:
+    """Render through GitHub's Markdown API and diff against the source LaTeX."""
+    import json
+    import urllib.error
+    import urllib.request
+
+    spans = scan_markdown_math(markdown)
+    if len(spans) != len(annotations):
+        print(f"FAIL: {len(spans)} math spans in the Markdown but "
+              f"{len(annotations)} annotations in the source", file=sys.stderr)
+        return 1
+
+    payload = json.dumps({"text": markdown, "mode": "gfm"}).encode("utf-8")
+    request = urllib.request.Request(
+        GITHUB_MARKDOWN_API,
+        data=payload,
+        headers={"Content-Type": "application/json",
+                 "Accept": "application/vnd.github+json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=90) as response:
+            rendered = response.read().decode("utf-8", "replace")
+    except (urllib.error.URLError, OSError) as exc:
+        print(f"cannot reach {GITHUB_MARKDOWN_API}: {exc}", file=sys.stderr)
+        print("verification NOT performed - this is not a pass", file=sys.stderr)
+        return 2
+
+    got = [strip_delimiters(html.unescape(x).strip())
+           for x in re.findall(r"<math-renderer[^>]*>(.*?)</math-renderer>",
+                               rendered, re.S)]
+    mismatches = [(i, a, b) for i, (a, b) in enumerate(zip(annotations, got))
+                  if a != b]
+
+    print(f"source annotations : {len(annotations)}")
+    print(f"github rendered    : {len(got)}")
+    print(f"exact matches      : {len(annotations) - len(mismatches)}/{len(annotations)}")
+    for index, source_tex, github_tex in mismatches[:10]:
+        print(f"\n  mismatch #{index}\n    source: {source_tex[:140]}"
+              f"\n    github: {github_tex[:140]}")
+    if len(got) != len(annotations) and not mismatches:
+        print("FAIL: GitHub rendered a different number of expressions",
+              file=sys.stderr)
+        return 1
+    if mismatches:
+        print(f"\nFAIL: {len(mismatches)} expression(s) reached MathJax changed",
+              file=sys.stderr)
+        return 1
+    print("\nOK: every expression reaches MathJax byte-identical to the source")
+    return 0
+
+
 def render_markdown(turns, search_count, meta):
     parts = [HEADER.format(**meta)]
     turn_no = 0
@@ -550,14 +702,25 @@ def render_markdown(turns, search_count, meta):
 
 
 def main(argv):
-    if len(argv) < 2:
+    flags = {a for a in argv[1:] if a.startswith("--")}
+    positional = [a for a in argv[1:] if not a.startswith("--")]
+    if not positional:
         print(__doc__)
         return 2
-    src = Path(argv[1])
-    out = Path(argv[2]) if len(argv) > 2 else REPO_ROOT / "README.md"
+    src = Path(positional[0])
+    out = Path(positional[1]) if len(positional) > 1 else REPO_ROOT / "README.md"
     source = src.read_text(encoding="utf-8", errors="replace")
 
-    turns, search_count = build_transcript(source)
+    turns, search_count, annotations = build_transcript(source)
+
+    problems = validate_latex(annotations)
+    if problems:
+        for reason, tex in problems[:10]:
+            print(f"unsupported LaTeX ({reason}): {tex[:140]}", file=sys.stderr)
+        print("refusing to write a transcript whose math cannot round-trip",
+              file=sys.stderr)
+        return 1
+
     commit_id = re.search(r'name="commit-id" content="([^"]+)"', source)
     share = re.search(r'property="og:url" content="([^"]+)"', source)
 
@@ -570,6 +733,22 @@ def main(argv):
         "image_count": len(IMAGE_MAP),
     }
     markdown, users, assistants = render_markdown(turns, search_count, meta)
+
+    if "--verify" in flags:
+        # github.com will not render inline math containing an environment such
+        # as \begin{bmatrix}; there are none today, so treat one appearing as a
+        # hard error rather than shipping raw LaTeX.
+        inline_environments = [tex for kind, tex in scan_markdown_math(markdown)
+                               if kind == "inline" and "\\begin{" in tex]
+        for tex in inline_environments[:5]:
+            print(f"inline math cannot contain an environment: {tex[:140]}",
+                  file=sys.stderr)
+        if inline_environments:
+            return 1
+        if out.exists() and out.read_text(encoding="utf-8") != markdown:
+            print(f"note: {out} is stale; regenerate before relying on it",
+                  file=sys.stderr)
+        return verify_on_github(markdown, annotations)
 
     out.write_text(markdown, encoding="utf-8")
 

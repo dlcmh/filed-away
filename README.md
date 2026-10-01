@@ -589,13 +589,13 @@ The Matrix $A$ looks like this:
 Mathematically, this is:
 
 $$
-A = \begin{bmatrix} 2 & 2 \\ 1 & 1 \\ 3 & 0 \\ 0 & 4 \end{bmatrix}
+A = \begin{bmatrix} 2 & 2 \\\\ 1 & 1 \\\\ 3 & 0 \\\\ 0 & 4 \end{bmatrix}
 $$
 
 If you want to produce $x_1$ blue hairpins and $x_2$ lavender hairpins, your system of equations ( $A\mathbf{x} = \mathbf{b}$ ) is:
 
 $$
-\begin{bmatrix} 2 & 2 \\ 1 & 1 \\ 3 & 0 \\ 0 & 4 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \\ b_4 \end{bmatrix}
+\begin{bmatrix} 2 & 2 \\\\ 1 & 1 \\\\ 3 & 0 \\\\ 0 & 4 \end{bmatrix} \begin{bmatrix} x_1 \\\\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\\\ b_2 \\\\ b_3 \\\\ b_4 \end{bmatrix}
 $$
 
 Which translates to these four "conservation statements":
@@ -871,7 +871,7 @@ This means we can also work backwards:
 The new system $A'\mathbf{y} = \mathbf{b}$ looks like this:
 
 $$
-\begin{bmatrix} 2 & 0 \\ 1 & 0 \\ 1.5 & 1.5 \\ 2 & -2 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \\ b_4 \end{bmatrix}
+\begin{bmatrix} 2 & 0 \\\\ 1 & 0 \\\\ 1.5 & 1.5 \\\\ 2 & -2 \end{bmatrix} \begin{bmatrix} y_1 \\\\ y_2 \end{bmatrix} = \begin{bmatrix} b_1 \\\\ b_2 \\\\ b_3 \\\\ b_4 \end{bmatrix}
 $$
 
 Notice what happened:
@@ -1048,7 +1048,7 @@ Let's say you want to predict house prices. You have 3 houses (3 rows, $i=1,2,3$
 Your equation $A\mathbf{x} = \mathbf{b}$ becomes:
 
 $$
-\begin{bmatrix} a_{1,1} & a_{1,2} \\ a_{2,1} & a_{2,2} \\ a_{3,1} & a_{3,2} \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix}
+\begin{bmatrix} a_{1,1} & a_{1,2} \\\\ a_{2,1} & a_{2,2} \\\\ a_{3,1} & a_{3,2} \end{bmatrix} \begin{bmatrix} x_1 \\\\ x_2 \end{bmatrix} = \begin{bmatrix} b_1 \\\\ b_2 \\\\ b_3 \end{bmatrix}
 $$
 
 - **$x_1$** = Square Footage (known data)
@@ -1545,7 +1545,7 @@ Let's say you now produce:
 Your old "production plan" vector was a 2D list: $(x_1, x_2)$ . Now it's a **5D vector** :
 
 $$
-\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \end{bmatrix}
+\mathbf{x} = \begin{bmatrix} x_1 \\\\ x_2 \\\\ x_3 \\\\ x_4 \\\\ x_5 \end{bmatrix}
 $$
 
 You cannot draw this on a 2D graph. But mathematically, it is still a vector, and you can still rotate it.
@@ -1571,7 +1571,7 @@ In 2D, the rotation matrix was $2 \times 2$ .
  In 5D, the rotation matrix is $5 \times 5$ . It has 25 entries instead of 4.
 
 $$
-A = \begin{bmatrix} a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} & a_{1,5} \\ a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4} & a_{2,5} \\ a_{3,1} & a_{3,2} & a_{3,3} & a_{3,4} & a_{3,5} \\ a_{4,1} & a_{4,2} & a_{4,3} & a_{4,4} & a_{4,5} \\ a_{5,1} & a_{5,2} & a_{5,3} & a_{5,4} & a_{5,5} \end{bmatrix}
+A = \begin{bmatrix} a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} & a_{1,5} \\\\ a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4} & a_{2,5} \\\\ a_{3,1} & a_{3,2} & a_{3,3} & a_{3,4} & a_{3,5} \\\\ a_{4,1} & a_{4,2} & a_{4,3} & a_{4,4} & a_{4,5} \\\\ a_{5,1} & a_{5,2} & a_{5,3} & a_{5,4} & a_{5,5} \end{bmatrix}
 $$
 
 This matrix is called an **orthogonal matrix** . It has a special property: its columns are all perpendicular to each other, and each column has length 1. This is what makes it a pure rotation (no stretching or squishing).
