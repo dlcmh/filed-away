@@ -563,8 +563,8 @@ def git_last_date(path: Path) -> str:
     path is untracked, or git is unavailable."""
     try:
         out = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--", "."],
-            cwd=str(path), capture_output=True, text=True, check=True,
+            ["git", "log", "-1", "--format=%cs", "--", path.name],
+            cwd=str(path.parent), capture_output=True, text=True, check=True,
         ).stdout.strip()
         return out or date.today().isoformat()
     except Exception:
@@ -572,35 +572,44 @@ def git_last_date(path: Path) -> str:
 
 
 def write_index(collection_dir: Path):
-    """Regenerate <collection>/README.md: an index of transcript subfolders,
-    newest first. Runs after every conversion so it never goes stale."""
+    """Regenerate <collection>/README.md: an index of every note in the
+    collection — transcript subfolders (README.md inside) and loose .md
+    files alike — newest first. Runs after every conversion so it never
+    goes stale; --reindex refreshes it after hand edits."""
     entries = []
-    for d in sorted(collection_dir.iterdir()):
-        if not d.is_dir():
+    for p in sorted(collection_dir.iterdir()):
+        if p.is_dir():
+            note = p / "README.md"
+            if not note.is_file():
+                continue
+            slug = p.name + "/"
+            fallback = p.name
+        elif p.is_file() and p.suffix == ".md" and p.name != "README.md":
+            note = p
+            slug = p.name
+            fallback = p.stem
+        else:
             continue
-        readme = d / "README.md"
-        if not readme.is_file():
-            continue
-        title = d.name
-        for line in readme.read_text(encoding="utf-8").splitlines():
+        title = fallback
+        for line in note.read_text(encoding="utf-8").splitlines():
             if line.startswith("# "):
                 title = line[2:].strip()
                 break
-        entries.append((git_last_date(d), title, d.name))
+        entries.append((git_last_date(p), title, slug))
     entries.sort(key=lambda e: e[1])                 # ties: title ascending
     entries.sort(key=lambda e: e[0], reverse=True)   # then newest first
 
     lines = [f"# {collection_dir.name}", ""]
     if entries:
-        lines += ["Transcripts in this collection, newest first.", "",
-                  "| Last updated | Transcript |",
+        lines += ["Notes in this collection, newest first.", "",
+                  "| Last updated | Note |",
                   "| --- | --- |"]
         for updated, title, slug in entries:
-            lines.append(f"| {updated} | [{title}]({slug}/) |")
+            lines.append(f"| {updated} | [{title}]({slug}) |")
     else:
-        lines += ["No transcripts yet."]
+        lines += ["No notes yet."]
     (collection_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"index: {collection_dir / 'README.md'} ({len(entries)} transcript"
+    print(f"index: {collection_dir / 'README.md'} ({len(entries)} note"
           f"{'s' if len(entries) != 1 else ''})")
 
 

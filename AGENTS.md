@@ -1,11 +1,21 @@
 # AGENTS.md
 
-This repository holds faithful Markdown transcripts of AI chat conversations.
-Transcripts live in collection folders (e.g. `notes/`); each
-conversion creates a subfolder named after the slugified transcript title,
-containing `README.md` (the transcript — GitHub renders it as the subfolder's
-landing page) and `images/` when the conversation has attachments. Transcripts
-must render correctly on github.com.
+This repository holds notes of all kinds — AI chat transcripts, summaries,
+study notes, and anything else worth keeping — and everything must render
+correctly on github.com.
+
+The `notes/` folder is the main collection. Notes are either single Markdown
+files or subfolders with a `README.md` (chat transcripts produced by
+`tools/ds2md.py` take the subfolder form because of their images; GitHub
+renders each README.md as the subfolder's landing page). The collection's
+`notes/README.md` is an auto-generated index of every note, newest first.
+
+## Adding other notes by hand
+
+Create a single Markdown file in `notes/` (or a subfolder with a `README.md`
+if it needs images), and start it with a top-level `# Title` — the index uses
+it. Then refresh the index with `tools/ds2md.py --reindex -o notes/`; never
+edit `notes/README.md` directly.
 
 ## Adding a transcript from a chat HTML export
 

@@ -1,7 +1,7 @@
 # notes
 
-Transcripts in this collection, newest first.
+Notes in this collection, newest first.
 
-| Last updated | Transcript |
+| Last updated | Note |
 | --- | --- |
 | 2026-10-02 | [HS math gap: CS vs ML](hs-math-gap-cs-vs-ml/) |
