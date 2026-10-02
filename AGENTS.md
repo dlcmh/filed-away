@@ -4,7 +4,10 @@ This repository holds notes of all kinds — AI chat transcripts, summaries,
 study notes, and anything else worth keeping — and everything must render
 correctly on github.com.
 
-The `notes/` folder is the main collection. Notes are either single Markdown
+The `notes/` folder is the main collection, classified into topic subfolders:
+`notes/<topic>/<note>`. Current topics: **mathematics**, **machine-learning**,
+**programming**, **finance**, **general**. The agent picks the closest fit;
+create a new topic only when nothing fits. Notes are either single Markdown
 files or subfolders with a `README.md` (chat transcripts produced by
 `tools/ds2md.py` take the subfolder form because of their images; GitHub
 renders each README.md as the subfolder's landing page). The collection's
@@ -12,10 +15,10 @@ renders each README.md as the subfolder's landing page). The collection's
 
 ## Adding other notes by hand
 
-Create a single Markdown file in `notes/` (or a subfolder with a `README.md`
-if it needs images), and start it with a top-level `# Title` — the index uses
-it. Then refresh the index with `tools/ds2md.py --reindex -o notes/`; never
-edit `notes/README.md` directly.
+Create a single Markdown file under the matching topic subfolder in `notes/`
+(or a subfolder with a `README.md` if it needs images), and start it with a
+top-level `# Title` — the index uses it. Then refresh the index with
+`tools/ds2md.py --reindex -o notes/`; never edit `notes/README.md` directly.
 
 ## Adding a transcript from a chat HTML export
 
@@ -31,9 +34,10 @@ edit `notes/README.md` directly.
    own titles are auto-generated poetry. See `tools/README.md` → Title.
 3. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
-4. Convert into the collection folder the user specifies (`-o notes/`); the
-   script creates the slug-named subfolder itself. Never rename or restructure
-   existing transcript folders — transcripts are addressed by path.
+4. Convert into the collection folder the user specifies (`-o notes/`),
+   passing `--topic` from the scheme above; the script creates the
+   `<topic>/<slug>/` subfolder itself. Never rename or restructure existing
+   notes — they are addressed by path.
 5. Verify before committing: the script's self-check must pass (math fidelity
    MATCH, balanced `$`, image refs == files on disk), then skim the rendered
    result for anything structural the checks can't see.

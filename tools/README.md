@@ -24,12 +24,14 @@ python3 -m venv /tmp/dsenv
     --description "One-line summary of what the conversation covers"
 ```
 
-Outputs `<out-dir>/<slug>/README.md` (GitHub renders it as the subfolder's
-landing page, so the collection folder reads as an index) and downloads
-attachments into `<out-dir>/<slug>/images/` — only created when the
-conversation actually has attachments. The subfolder name is the slugified
-title (override with `--name`). Other options: `--title`, `--source-url`,
-`--skip-images`. The script prints a self-check report at the end:
+Outputs `<out-dir>/[<topic>/]<slug>/README.md` (GitHub renders it as the
+subfolder's landing page, so the collection folder reads as an index) and
+downloads attachments into the transcript subfolder's `images/` — only created
+when the conversation actually has attachments. The subfolder name is the
+slugified title (override with `--name`); pass `--topic` to file it under a
+high-level topic subfolder (scheme in AGENTS.md). Other options: `--title`,
+`--source-url`, `--skip-images`. The script prints a self-check report at the
+end:
 
 - math fidelity — every LaTeX formula emitted is multiset-identical to the
   source annotations
@@ -42,10 +44,11 @@ Commit only after all checks pass and you have skimmed the diff.
 ## Collection index
 
 After every conversion the script also regenerates `<out-dir>/README.md` —
-an index of *every* note in the collection (transcript subfolders and loose
-`.md` files alike), newest first, with dates taken from the last commit
-touching each entry. `--reindex` regenerates just the index (also the way to
-refresh it after hand-editing any note):
+an index of *every* note in the collection at any depth (transcript
+subfolders and loose `.md` files alike), newest first, with a Topic column
+(the note's first path segment) and dates from the last commit touching each
+entry. `--reindex` regenerates just the index (also the way to refresh it
+after hand-editing any note):
 
 ```sh
 /tmp/dsenv/bin/python tools/ds2md.py --reindex -o notes/

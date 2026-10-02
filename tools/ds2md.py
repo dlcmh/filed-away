@@ -573,39 +573,41 @@ def git_last_date(path: Path) -> str:
 
 def write_index(collection_dir: Path):
     """Regenerate <collection>/README.md: an index of every note in the
-    collection — transcript subfolders (README.md inside) and loose .md
-    files alike — newest first. Runs after every conversion so it never
-    goes stale; --reindex refreshes it after hand edits."""
+    collection, at any depth — subfolder notes (README.md inside) and loose
+    .md files alike — newest first, with a Topic column (the note's first
+    path segment). Runs after every conversion so it never goes stale;
+    --reindex refreshes it after hand edits."""
     entries = []
-    for p in sorted(collection_dir.iterdir()):
-        if p.is_dir():
-            note = p / "README.md"
-            if not note.is_file():
-                continue
-            slug = p.name + "/"
+    for note in sorted(collection_dir.rglob("*.md")):
+        if note.name == "README.md":
+            if note.parent == collection_dir:
+                continue  # the index itself
+            p = note.parent
             fallback = p.name
-        elif p.is_file() and p.suffix == ".md" and p.name != "README.md":
-            note = p
-            slug = p.name
-            fallback = p.stem
+            slug = p.relative_to(collection_dir).as_posix() + "/"
         else:
-            continue
+            p = note
+            fallback = note.stem
+            slug = note.relative_to(collection_dir).as_posix()
         title = fallback
         for line in note.read_text(encoding="utf-8").splitlines():
             if line.startswith("# "):
                 title = line[2:].strip()
                 break
-        entries.append((git_last_date(p), title, slug))
+        rel = p.relative_to(collection_dir)
+        topic = rel.parts[0] if len(rel.parts) > 1 else ""
+        entries.append((git_last_date(p), title, slug, topic))
     entries.sort(key=lambda e: e[1])                 # ties: title ascending
     entries.sort(key=lambda e: e[0], reverse=True)   # then newest first
 
     lines = [f"# {collection_dir.name}", ""]
     if entries:
         lines += ["Notes in this collection, newest first.", "",
-                  "| Last updated | Note |",
-                  "| --- | --- |"]
-        for updated, title, slug in entries:
-            lines.append(f"| {updated} | [{title}]({slug}) |")
+                  "| Last updated | Topic | Note |",
+                  "| --- | --- | --- |"]
+        for updated, title, slug, topic in entries:
+            cell = f"[{topic}]({topic}/)" if topic else "—"
+            lines.append(f"| {updated} | {cell} | [{title}]({slug}) |")
     else:
         lines += ["No notes yet."]
     (collection_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -649,6 +651,8 @@ def main():
                     help="collection folder that receives a <slug>/ subfolder per transcript, e.g. notes/")
     ap.add_argument("--reindex", action="store_true",
                     help="only regenerate the <out-dir>/README.md index; no conversion")
+    ap.add_argument("--topic", help="high-level topic subfolder to file the "
+                                    "transcript under, e.g. mathematics (see AGENTS.md for the scheme)")
     ap.add_argument("--title", help="transcript title (default: derived from the first user message)")
     ap.add_argument("--name", help="filename slug override (default: slugified title)")
     ap.add_argument("--description", help="one-line editorial summary shown under the title")
@@ -704,7 +708,8 @@ def main():
         title, title_src = page_title, "page title"
     slug = slugify(args.name or title)
     print(f"title: {title!r} (from {title_src}); page title was: {page_title!r}")
-    transcript_dir = args.out_dir / slug
+    parts = [args.out_dir] + ([args.topic] if args.topic else []) + [slug]
+    transcript_dir = Path(*parts)
     if not args.skip_images:
         download_attachments(transcript_dir / args.images_dir)
 
