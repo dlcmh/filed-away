@@ -551,7 +551,9 @@ def build_header(args, title, source_url, dates, n_user, n_asst):
     if stats.get("images"):
         features.append("attached screenshots")
     flist = features[0] if features else "the conversation"
-    if len(features) > 1:
+    if len(features) == 2:
+        flist = " and ".join(features)
+    elif len(features) > 2:
         flist = ", ".join(features[:-1]) + ", and " + features[-1]
     kind = "shared-conversation" if (source_url and "/share/" in source_url) else "chat"
     lines.append(f"> Recovered from the {kind} HTML export: {flist} preserved.")
