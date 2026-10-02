@@ -120,7 +120,11 @@ standalone script, because it needs the permissioned browser bridge.
    markdown layer processes backslash escapes *before* MathJax, so `\\` row
    separators arrive as a single `\` and every bmatrix collapses into one row.
    Fence content passes through verbatim. Inline math stays `$…$` (its content
-   is backslash-letter commands only, which Markdown leaves alone).
+   is backslash-letter commands only, which Markdown leaves alone). Inside a
+   list item, every line of the fence — opening, LaTeX body, closing — must be
+   indented at the item's continuation level: a half-indented fence (body and
+   closing at column 0) makes GitHub parse the opening as an indented code
+   block and the rest of the list is swallowed into it.
 5. **Raw `\(` … `\)` in model text is not math.** Some DeepSeek replies emit
    LaTeX with `\(` delimiters that DeepSeek itself never renders — they are
    plain text. The script backslash-escapes them so GitHub shows them
