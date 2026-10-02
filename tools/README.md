@@ -111,7 +111,12 @@ the choice is visible in the run output.
    converts those back to PNG via macOS `sips` (falls back to renaming the file
    to the real format elsewhere). Screenshot names contain narrow no-break
    spaces (U+202F); the sanitizer strips them into clean filenames.
-8. **Metadata.** The share link comes from the `og:url` meta (upgraded to
+9. **The note is the archive.** After a verified conversion the owner deletes
+   the source conversation from DeepSeek, which kills the share link — the
+   note (with its locally stored images) becomes the only copy. The header's
+   Source link is provenance and is expected to expire; never rely on it for
+   content.
+10. **Metadata.** The share link comes from the `og:url` meta (upgraded to
    https), the conversation title from `<title>` (`DeepSeek - X` share format
    or `X - DeepSeek` app format), and the date range from the attachment
    filenames.

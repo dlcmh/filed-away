@@ -2,7 +2,7 @@
 
 > DeepSeek's web-searched take on a high-rep deadlift routine for two 55-year-olds: injury risk, recovery, exercise swaps, weekly split, and staying consistent with travel.
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/068l6adllk5q3iwc0f) on chat.deepseek.com. 30 questions, 30 answers.
+> Source: [shared conversation](https://chat.deepseek.com/share/068l6adllk5q3iwc0f) on chat.deepseek.com. 30 questions, 30 answers. The source link expires when the conversation is deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: tables and web citations preserved.
 
 ---

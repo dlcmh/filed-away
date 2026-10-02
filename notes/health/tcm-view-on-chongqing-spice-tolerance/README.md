@@ -2,7 +2,7 @@
 
 > DeepSeek explains, through TCM's dampness-and-heat framework, why Chongqing locals thrive on fiery food while a sensitive stomach does not, with cooling-dish suggestions.
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/p1rm0yxx7bag2v5t1c) on chat.deepseek.com. 1 question, 1 answer.
+> Source: [shared conversation](https://chat.deepseek.com/share/p1rm0yxx7bag2v5t1c) on chat.deepseek.com. 1 question, 1 answer. The source link expires when the conversation is deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: the conversation preserved.
 
 ---

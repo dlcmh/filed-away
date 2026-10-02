@@ -2,7 +2,7 @@
 
 > A conversation with DeepSeek about the maths gap between high-school computer science and machine learning — and a walk through the linear algebra in *Mathematics for Machine Learning*.
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/us563kqzvc4wlthbi9) on chat.deepseek.com, 2026-09-28 → 2026-09-30. 31 questions, 31 answers.
+> Source: [shared conversation](https://chat.deepseek.com/share/us563kqzvc4wlthbi9) on chat.deepseek.com, 2026-09-28 → 2026-09-30. 31 questions, 31 answers. The source link expires when the conversation is deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: original LaTeX math, tables, web citations, and attached screenshots preserved.
 
 ---

@@ -44,3 +44,9 @@ top-level `# Title` — the index uses it. Then refresh the index with
 6. Commit and push autonomously once checks pass (standing approval from the
    repo owner). Never `git add -A` — add only the new transcript folder (and
    tooling, if that is the task).
+
+After a verified conversion the owner deletes the source conversation from
+DeepSeek, which kills the share link — from that point the note (with its
+locally stored images) is the only copy, so it must stay complete and
+self-contained. The header's Source link is provenance and is expected to
+expire.

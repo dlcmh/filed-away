@@ -2,7 +2,7 @@
 
 > DeepSeek's web-searched comparison of Huawei's claimed Kirin 9050 Pro transistor density against Apple's 2nm A20 Pro for the iPhone 18.
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/azjiy4fuwk52yvv94a) on chat.deepseek.com, 2026-10-02. 2 questions, 2 answers.
+> Source: [shared conversation](https://chat.deepseek.com/share/azjiy4fuwk52yvv94a) on chat.deepseek.com, 2026-10-02. 2 questions, 2 answers. The source link expires when the conversation is deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: tables, web citations, and attached screenshots preserved.
 
 ---
