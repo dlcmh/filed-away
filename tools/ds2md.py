@@ -229,6 +229,21 @@ def render_blocks(container):
             out.append("\n".join("> " + b.replace("\n", "\n> ") for b in inner))
         elif name == "pre":
             out.append(f"```\n{child.get_text()}\n```")
+        elif name == "div" and any("md-code-block" in c for c in cls):
+            # share-page code blocks: banner (language label + copy chrome)
+            # wrapped around a <pre> holding the code text
+            pre = child.find("pre")
+            if pre is None:
+                warn(f"md-code-block without <pre>: {cls}")
+            else:
+                lang = ""
+                for s in child.find_all("span"):
+                    t = s.get_text(strip=True)
+                    if t and re.fullmatch(r"[A-Za-z0-9+#-]+", t) and t.lower() not in ("copy", "copied"):
+                        lang = t
+                        break
+                bump("code_block")
+                out.append(f"```{lang}\n{pre.get_text()}\n```")
         elif name == "span" and ("katex-display" in cls or "ds-markdown-math" in cls):
             bump("math_display")
             # ```math fences pass the LaTeX to MathJax verbatim; inside $$...$$
@@ -275,6 +290,7 @@ def render_list(node, indent=""):
                 if t:
                     parts.append(t)
             elif c.name == "span" and "katex-display" in ccls:
+                bump("math_display")
                 parts.append("```math\n" + get_tex(c) + "\n```")
             else:
                 t = tighten_and_flush(render_inline(c)).strip()

@@ -13,3 +13,4 @@ Notes in this collection, newest first.
 | 2026-10-02 | [health](health/) | [TCM foods to avoid, spleen dampness, and IBS](health/tcm-foods-to-avoid-spleen-dampness-and-ibs/) |
 | 2026-10-02 | [health](health/) | [TCM view on Chongqing spice tolerance](health/tcm-view-on-chongqing-spice-tolerance/) |
 | 2026-10-02 | [health](health/) | [TCM-friendly Chinese cooking for a beginner in Malaysia](health/tcm-friendly-chinese-cooking-for-a-beginner-in-malaysia/) |
+| 2026-10-02 | [health](health/) | [Walking 1,000 km a year: waistline and belly fat](health/walking-1000-km-a-year-waistline-and-belly-fat/) |
