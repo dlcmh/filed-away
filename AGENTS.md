@@ -1,7 +1,7 @@
 # AGENTS.md
 
 This repository holds faithful Markdown transcripts of AI chat conversations.
-Transcripts live in collection folders (e.g. `deepseek/`, `glm/`); each
+Transcripts live in collection folders (e.g. `glm/`); each
 conversion creates a subfolder named after the slugified transcript title,
 containing `README.md` (the transcript — GitHub renders it as the subfolder's
 landing page) and `images/` when the conversation has attachments. Transcripts
