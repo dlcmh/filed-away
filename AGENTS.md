@@ -6,8 +6,9 @@ correctly on github.com.
 
 The `notes/` folder is the main collection, classified into topic subfolders:
 `notes/<topic>/<note>`. Current topics: **mathematics**, **machine-learning**,
-**programming**, **finance**, **general**. The agent picks the closest fit;
-create a new topic only when nothing fits. Notes are either single Markdown
+**programming**, **hardware**, **finance**, **general**. The agent picks the
+closest fit; create a new topic only when nothing fits. Notes are either single
+Markdown
 files or subfolders with a `README.md` (chat transcripts produced by
 `tools/ds2md.py` take the subfolder form because of their images; GitHub
 renders each README.md as the subfolder's landing page). The collection's

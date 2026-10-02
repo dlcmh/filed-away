@@ -538,17 +538,19 @@ def build_header(args, title, source_url, dates, n_user, n_asst):
         domain = urlparse(source_url).netloc
         seg = f"> Source: [{label}]({source_url}) on {domain}"
         if dates:
-            seg += f", {dates[0]} → {dates[-1]}"
+            seg += f", {dates[0]}" if dates[0] == dates[-1] else f", {dates[0]} → {dates[-1]}"
         seg += f". {n_user} questions, {n_asst} answers."
         lines.append(seg)
-    features = ["original LaTeX math"]
+    features = []
+    if stats.get("math_inline") or stats.get("math_display"):
+        features.append("original LaTeX math")
     if stats.get("tables"):
         features.append("tables")
     if stats.get("cites"):
         features.append("web citations")
     if stats.get("images"):
         features.append("attached screenshots")
-    flist = features[0]
+    flist = features[0] if features else "the conversation"
     if len(features) > 1:
         flist = ", ".join(features[:-1]) + ", and " + features[-1]
     kind = "shared-conversation" if (source_url and "/share/" in source_url) else "chat"
