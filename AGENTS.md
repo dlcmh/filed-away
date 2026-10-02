@@ -37,6 +37,9 @@ top-level `# Title` — the index uses it. Then refresh the index with
    commentary.
 3. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
+   If an export turns out to be a partial subset and its share link is still
+   alive, recover the full conversation from the URL instead — the procedure
+   is in `tools/README.md` → Recovering a full conversation.
 4. Convert into the collection folder the user specifies (`-o notes/`),
    passing `--topic` from the scheme above; the script creates the
    `<topic>/<slug>/` subfolder itself. Never rename or restructure existing

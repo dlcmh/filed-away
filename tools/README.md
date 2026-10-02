@@ -70,6 +70,35 @@ given) are chosen in this order:
 The script logs which source produced the title alongside the page title, so
 the choice is visible in the run output.
 
+## Recovering a full conversation from a live share URL
+
+Share pages render the conversation as a **virtualized list** — the DOM only
+holds messages near the viewport, so a naive fetch yields an empty shell
+(bot-gated; curl gets zero bytes) and a save without scrolling yields a
+subset. While a share link is alive (before the owner deletes the
+conversation), the full content can be recovered with ZCode's in-app browser:
+
+1. Load the share URL and wait for messages to render. If a `#cf-overlay`
+   Cloudflare challenge appears, the user can solve it in the visible pane.
+2. Find the scroll container: the ancestor of `.ds-virtual-list` whose
+   `scrollHeight` exceeds its `clientHeight`. Start from `scrollTop = 0`.
+3. Step `scrollTop` toward the bottom (~1,400 px per ~250 ms), collecting
+   every `[data-virtual-list-item-key]` element's `outerHTML` into a
+   page-side map after each step. Virtualization mounts and unmounts rows as
+   you scroll, so **harvest during the scroll** — a final `querySelectorAll`
+   only sees the last window.
+4. The loop is done when `scrollTop` reaches `scrollHeight - clientHeight`.
+   Do one final pass back to the top, then sort items by numeric key.
+5. Assemble a standalone HTML file: `<head>` with the page `<title>` and the
+   `og:url` meta, `<body>` wrapping the collected items in order — then
+   convert it like any export (`--topic`, `--title`, `--description`).
+6. Non-contiguous message IDs are normal (deleted messages); the capture is
+   complete when the scroll reaches the end and the key set stops growing.
+   Keep the usual checks: math fidelity, CoT leak grep.
+
+Run this from the agent's browser tooling — it is a procedure, not a
+standalone script, because it needs the permissioned browser bridge.
+
 ## Gotchas (why the rules are what they are)
 
 1. **Message DOM.** Messages live in `div[data-virtual-list-item-key]` inside
