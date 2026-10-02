@@ -1,4 +1,4 @@
-# Into the Unknown
+# HS math gap: CS vs ML
 
 > A conversation with DeepSeek about the maths gap between high-school computer science and machine learning — and a walk through the linear algebra in *Mathematics for Machine Learning*.
 >
