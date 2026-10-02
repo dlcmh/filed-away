@@ -32,6 +32,9 @@ top-level `# Title` — the index uses it. Then refresh the index with
    words, e.g. "HS math gap: CS vs ML"). The script's automatic fallbacks —
    first-question heuristic, then the page title — are stopgaps; DeepSeek's
    own titles are auto-generated poetry. See `tools/README.md` → Title.
+   Every submitted HTML export is standalone: never assume or assert any
+   relationship to earlier exports or notes, in titles, descriptions, or
+   commentary.
 3. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
 4. Convert into the collection folder the user specifies (`-o notes/`),

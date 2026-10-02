@@ -1,6 +1,6 @@
 # TCM kitchen Q&A: umami, fruit rules, miso swaps
 
-> A slice of the Chongqing TCM conversation: umami in Chinese (鲜味), who discovered the fifth taste, TCM rules on raw and tropical fruits, and Malaysian miso substitutes.
+> DeepSeek on umami in Chinese (鲜味) and who discovered the fifth taste, TCM rules on raw and tropical fruits, and Malaysian miso substitutes.
 >
 > Source: [shared conversation](https://chat.deepseek.com/share/vbq9aquohdugupxz29) on chat.deepseek.com. 5 questions, 6 answers. The source link expires when the conversation is deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: tables preserved.
