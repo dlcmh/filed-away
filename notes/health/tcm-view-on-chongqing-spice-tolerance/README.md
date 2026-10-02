@@ -36,8 +36,8 @@ If this environmental dampness isn't countered, it stagnates the body's vital en
 
 This is where the spicy food comes in. In TCM, chili peppers and Sichuan peppercorns are not just flavorings; they are potent herbs with specific properties.
 
-- **Chili Peppers (La Jiao):** They are considered "hot" and "pungent." Their job is to **dispel cold and transform dampness** . Think of how you sweat when you eat them—that's the body's way of expelling excess moisture.
-- **Sichuan Peppercorn (Hua Jiao):** It is also "warm" and "pungent" and is specifically known for its ability to **dry dampness** and improve circulation .
+- **Chili Peppers (辣椒, là jiāo):** They are considered "hot" and "pungent." Their job is to **dispel cold and transform dampness** . Think of how you sweat when you eat them—that's the body's way of expelling excess moisture.
+- **Sichuan Peppercorn (花椒, huā jiāo):** It is also "warm" and "pungent" and is specifically known for its ability to **dry dampness** and improve circulation .
 
 So, by eating a diet heavy in these spices, Chongqing locals are effectively using food as medicine to **air-condition and dehumidify their bodies from the inside out**. They are creating a balance against the oppressive, damp climate they live in.
 
