@@ -12,7 +12,9 @@ must render correctly on github.com.
 1. Use the converter: `tools/ds2md.py <input.html> -o <folder>/` — setup,
    options, and self-checks are documented in `tools/README.md`. Do not
    hand-transcribe: the script preserves math, spacing, and tables
-   byte-faithfully and verifies its own output.
+   byte-faithfully and verifies its own output. It also regenerates the
+   collection's `README.md` index on every conversion (or via `--reindex`) —
+   refresh it that way after hand edits instead of editing the index.
 2. Pass a short, descriptive `--title` derived from the conversation (a few
    words, e.g. "HS math gap: CS vs ML"). The script's automatic fallbacks —
    first-question heuristic, then the page title — are stopgaps; DeepSeek's

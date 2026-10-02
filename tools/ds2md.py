@@ -21,6 +21,7 @@ import sys
 import tempfile
 import urllib.request
 from collections import Counter
+from datetime import date
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -555,6 +556,54 @@ def build_header(args, title, source_url, dates, n_user, n_asst):
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- index
+
+def git_last_date(path: Path) -> str:
+    """Date of the last commit touching path, as YYYY-MM-DD; today if the
+    path is untracked, or git is unavailable."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", "."],
+            cwd=str(path), capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        return out or date.today().isoformat()
+    except Exception:
+        return date.today().isoformat()
+
+
+def write_index(collection_dir: Path):
+    """Regenerate <collection>/README.md: an index of transcript subfolders,
+    newest first. Runs after every conversion so it never goes stale."""
+    entries = []
+    for d in sorted(collection_dir.iterdir()):
+        if not d.is_dir():
+            continue
+        readme = d / "README.md"
+        if not readme.is_file():
+            continue
+        title = d.name
+        for line in readme.read_text(encoding="utf-8").splitlines():
+            if line.startswith("# "):
+                title = line[2:].strip()
+                break
+        entries.append((git_last_date(d), title, d.name))
+    entries.sort(key=lambda e: e[1])                 # ties: title ascending
+    entries.sort(key=lambda e: e[0], reverse=True)   # then newest first
+
+    lines = [f"# {collection_dir.name}", ""]
+    if entries:
+        lines += ["Transcripts in this collection, newest first.", "",
+                  "| Last updated | Transcript |",
+                  "| --- | --- |"]
+        for updated, title, slug in entries:
+            lines.append(f"| {updated} | [{title}]({slug}/) |")
+    else:
+        lines += ["No transcripts yet."]
+    (collection_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"index: {collection_dir / 'README.md'} ({len(entries)} transcript"
+          f"{'s' if len(entries) != 1 else ''})")
+
+
 def run_checks(md, src_tex, images_dir, args):
     ok = True
     match = sorted(EMITTED_TEX) == sorted(src_tex)
@@ -585,9 +634,12 @@ def run_checks(md, src_tex, images_dir, args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("input", type=Path, help="DeepSeek chat HTML export (shared page or app page)")
+    ap.add_argument("input", type=Path, nargs="?",
+                    help="DeepSeek chat HTML export (shared page or app page)")
     ap.add_argument("-o", "--out-dir", type=Path, required=True,
                     help="collection folder that receives a <slug>/ subfolder per transcript, e.g. glm/")
+    ap.add_argument("--reindex", action="store_true",
+                    help="only regenerate the <out-dir>/README.md index; no conversion")
     ap.add_argument("--title", help="transcript title (default: derived from the first user message)")
     ap.add_argument("--name", help="filename slug override (default: slugified title)")
     ap.add_argument("--description", help="one-line editorial summary shown under the title")
@@ -595,6 +647,12 @@ def main():
     ap.add_argument("--images-dir", default="images", help="subfolder for attachments (default: images)")
     ap.add_argument("--skip-images", action="store_true", help="do not download attachments")
     args = ap.parse_args()
+
+    if args.reindex:
+        write_index(args.out_dir)
+        return
+    if args.input is None:
+        ap.error("input HTML is required unless --reindex")
 
     soup = BeautifulSoup(args.input.read_text(encoding="utf-8"), "lxml")
 
@@ -676,6 +734,8 @@ def main():
     if ALL_ATTS and not args.skip_images:
         (transcript_dir / "images-manifest.json").write_text(
             json.dumps(ALL_ATTS, indent=2), encoding="utf-8")
+
+    write_index(args.out_dir)
 
     print(f"user turns: {n_user}, assistant turns: {n_asst}")
     print(f"stats: {json.dumps(stats, sort_keys=True)}")

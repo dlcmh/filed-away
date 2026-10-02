@@ -31,6 +31,25 @@ conversation actually has attachments. The subfolder name is the slugified
 title (override with `--name`). Other options: `--title`, `--source-url`,
 `--skip-images`. The script prints a self-check report at the end:
 
+- math fidelity — every LaTeX formula emitted is multiset-identical to the
+  source annotations
+- `$` balance — inline math delimiters pair within each line
+- display fences — every ` ```math ` block is closed
+- image refs — every image referenced exists on disk
+
+Commit only after all checks pass and you have skimmed the diff.
+
+## Collection index
+
+After every conversion the script also regenerates `<out-dir>/README.md` —
+an index of the collection's transcripts, newest first, with dates taken from
+the last commit touching each transcript subfolder. `--reindex` regenerates
+just the index (also the way to refresh it after hand-editing a transcript):
+
+```sh
+/tmp/dsenv/bin/python tools/ds2md.py --reindex -o glm/
+```
+
 ## Title
 
 The H1 title (and the subfolder name — the slugified title, unless `--name` is
@@ -46,15 +65,6 @@ given) are chosen in this order:
 
 The script logs which source produced the title alongside the page title, so
 the choice is visible in the run output.
-
-- math fidelity — every LaTeX formula emitted is multiset-identical to the
-  source annotations
-- `$` balance — inline math delimiters pair within each line
-- display fences — every ` ```math ` block is closed
-- image refs — every image referenced exists on disk
-
-Commit only after all checks pass and you have skimmed the diff.
-
 ## Gotchas (why the rules are what they are)
 
 1. **Message DOM.** Messages live in `div[data-virtual-list-item-key]` inside
