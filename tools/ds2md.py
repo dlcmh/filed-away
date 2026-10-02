@@ -301,11 +301,15 @@ def render_list(node, indent=""):
             idx += 1
         first = parts[0] if parts else ""
         rest = parts[1:]
-        lines.append(f"{indent}{marker} {first}")
         cont = indent + " " * (len(marker) + 1)
+        flines = first.split("\n")
+        lines.append(f"{indent}{marker} {flines[0]}")
+        # indent EVERY line of a multi-line part: a partially indented
+        # ```math fence (body/closing at column 0) shreds the list on GitHub
+        lines.extend(cont + ln if ln else "" for ln in flines[1:])
         for r in rest:
             lines.append("")
-            lines.append(cont + r)
+            lines.extend(cont + ln if ln else "" for ln in r.split("\n"))
         for sub in nested:
             lines.append(render_list(sub, indent=indent + " " * (len(marker) + 1)))
     return "\n".join(lines)
@@ -651,7 +655,9 @@ def run_checks(md, src_tex, images_dir, args):
     print(f"check per-line $ pairing: {'OK' if good else 'FAIL ' + str(odd[:5])}")
     ok &= good
     segs = md.split("```math")
-    good = len(segs) - 1 == stats.get("math_display", 0) and all(s.startswith("\n") and "\n```" in s for s in segs[1:])
+    good = len(segs) - 1 == stats.get("math_display", 0) and all(
+        s.startswith("\n") and re.search(r"\n *```", s) for s in segs[1:]
+    )
     print(f"check display fences ({stats.get('math_display', 0)}): {'OK' if good else 'FAIL'}")
     ok &= good
     if args.skip_images:

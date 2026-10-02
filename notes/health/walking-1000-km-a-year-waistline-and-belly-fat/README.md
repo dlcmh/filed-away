@@ -24,20 +24,20 @@ To estimate how many inches you can lose around your waistline by walking **1,00
    - For **55 kg**:
 
      ```math
-0.53 \text{ cal/kg/km} \times 55 \text{ kg} = 29.15 \text{ calories per km}
-```
+     0.53 \text{ cal/kg/km} \times 55 \text{ kg} = 29.15 \text{ calories per km}
+     ```
    - Over **1,000 km**:
 
      ```math
-29.15 \times 1,000 = 29,150 \text{ calories burned}
-```
+     29.15 \times 1,000 = 29,150 \text{ calories burned}
+     ```
 2. **Fat Loss Calculation**
    - **1 pound (~0.45 kg) of fat ≈ 3,500 calories**.
    - Total fat lost:
 
      ```math
-\frac{29,150}{3,500} \approx 8.33 \text{ lbs (~3.78 kg)}
-```
+     \frac{29,150}{3,500} \approx 8.33 \text{ lbs (~3.78 kg)}
+     ```
 3. **Waistline Reduction**
    - **1 lb of fat loss ≈ ~0.5-inch reduction in waist circumference** (varies by body composition).
    - **8.33 lbs lost ≈ 4.17 inches off waistline** (approximate).
@@ -252,8 +252,8 @@ For **lightly active** (walking 2.74 km/day):
 - **Daily walking (2.74 km):**
 
   ```math
-29 \text{ kcal/km} \times 2.74 \text{ km} \approx 80 \text{ kcal/day}
-```
+  29 \text{ kcal/km} \times 2.74 \text{ km} \approx 80 \text{ kcal/day}
+  ```
 - **Total TDEE (sedentary + walking):** ~1,640–1,760 kcal/day.
 
 ---
@@ -431,12 +431,12 @@ Great question! **Insufficient sleep** and **belly fat** are closely linked thro
 
 - **Ghrelin (Hunger Hormone) ↑** → Makes you crave carbs/sugar.
 - **Leptin (Satiety Hormone) ↓** → You don’t feel full easily.\
-*Result: Late-night snacking + 300+ extra calories/day (often junk food).*
+  *Result: Late-night snacking + 300+ extra calories/day (often junk food).*
 
 ### **2. Stress Hormones Spike**
 
 - **Cortisol (Stress Hormone) ↑** → Directly promotes **visceral fat** (deep belly fat around organs).\
-*This fat is stubborn and linked to heart disease/diabetes.*
+  *This fat is stubborn and linked to heart disease/diabetes.*
 
 ### **3. Metabolism Slows Down**
 
