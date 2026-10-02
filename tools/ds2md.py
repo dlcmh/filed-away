@@ -539,7 +539,8 @@ def build_header(args, title, source_url, dates, n_user, n_asst):
         seg = f"> Source: [{label}]({source_url}) on {domain}"
         if dates:
             seg += f", {dates[0]}" if dates[0] == dates[-1] else f", {dates[0]} → {dates[-1]}"
-        seg += f". {n_user} questions, {n_asst} answers."
+        seg += (f". {n_user} question{'s' if n_user != 1 else ''}, "
+                f"{n_asst} answer{'s' if n_asst != 1 else ''}.")
         lines.append(seg)
     features = []
     if stats.get("math_inline") or stats.get("math_display"):

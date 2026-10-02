@@ -98,7 +98,12 @@ the choice is visible in the run output.
 6. **Citations.** `<a><span class="ds-markdown-cite">n</span></a>` becomes
    `[[n]](href)`; the favicon `<img>`s next to them are UI chrome and are
    dropped.
-7. **Attachment images.** Hosted on `files.deepseeksvc.com` with *signed,
+7. **Chain of thought is never transcribed.** Reasoning traces ("Thought for
+   N seconds" and the `ds-think-content` block) live in a sibling container
+   outside `.ds-assistant-message-main-content`, so the extractor never sees
+   them. After converting an export that contains one, grep the output for a
+   distinctive CoT phrase — it must come up empty.
+8. **Attachment images.** Hosted on `files.deepseeksvc.com` with *signed,
    expiring* URLs — download promptly after saving the export. Quality tiers:
    `ty=o` is rejected (HTTP 400), `ty=p` is the full-resolution preview, `ty=t`
    a small thumbnail. The CDN serves webp even for `.png` originals; the script
