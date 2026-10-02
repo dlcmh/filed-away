@@ -1,4 +1,4 @@
-# glm
+# notes
 
 Transcripts in this collection, newest first.
 

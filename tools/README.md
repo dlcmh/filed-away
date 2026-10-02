@@ -19,7 +19,7 @@ python3 -m venv /tmp/dsenv
 ## Convert
 
 ```sh
-/tmp/dsenv/bin/python tools/ds2md.py ~/Desktop/chat.html -o glm/ \
+/tmp/dsenv/bin/python tools/ds2md.py ~/Desktop/chat.html -o notes/ \
     --title "HS math gap: CS vs ML" \
     --description "One-line summary of what the conversation covers"
 ```
@@ -47,7 +47,7 @@ the last commit touching each transcript subfolder. `--reindex` regenerates
 just the index (also the way to refresh it after hand-editing a transcript):
 
 ```sh
-/tmp/dsenv/bin/python tools/ds2md.py --reindex -o glm/
+/tmp/dsenv/bin/python tools/ds2md.py --reindex -o notes/
 ```
 
 ## Title

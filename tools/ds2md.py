@@ -2,7 +2,7 @@
 """Convert a DeepSeek chat HTML export into a faithful GitHub-Flavored Markdown transcript.
 
 Usage:
-    python3 ds2md.py ~/Desktop/chat1.html -o glm/ [--title "..."] [--name slug]
+    python3 ds2md.py ~/Desktop/chat1.html -o notes/ [--title "..."] [--name slug]
 
 Writes <out-dir>/<slug>/README.md (GitHub renders it as the subfolder's
 landing page) plus <out-dir>/<slug>/images/ when the chat has attachments.
@@ -637,7 +637,7 @@ def main():
     ap.add_argument("input", type=Path, nargs="?",
                     help="DeepSeek chat HTML export (shared page or app page)")
     ap.add_argument("-o", "--out-dir", type=Path, required=True,
-                    help="collection folder that receives a <slug>/ subfolder per transcript, e.g. glm/")
+                    help="collection folder that receives a <slug>/ subfolder per transcript, e.g. notes/")
     ap.add_argument("--reindex", action="store_true",
                     help="only regenerate the <out-dir>/README.md index; no conversion")
     ap.add_argument("--title", help="transcript title (default: derived from the first user message)")

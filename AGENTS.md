@@ -1,7 +1,7 @@
 # AGENTS.md
 
 This repository holds faithful Markdown transcripts of AI chat conversations.
-Transcripts live in collection folders (e.g. `glm/`); each
+Transcripts live in collection folders (e.g. `notes/`); each
 conversion creates a subfolder named after the slugified transcript title,
 containing `README.md` (the transcript — GitHub renders it as the subfolder's
 landing page) and `images/` when the conversation has attachments. Transcripts
@@ -19,14 +19,14 @@ must render correctly on github.com.
    words, e.g. "HS math gap: CS vs ML"). The script's automatic fallbacks —
    first-question heuristic, then the page title — are stopgaps; DeepSeek's
    own titles are auto-generated poetry. See `tools/README.md` → Title.
-2. Read the Gotchas section of `tools/README.md` before handling anything the
+3. Read the Gotchas section of `tools/README.md` before handling anything the
    script flags — especially partial/truncated captures and expired image URLs.
-3. Convert into the collection folder the user specifies (`-o glm/`); the
+4. Convert into the collection folder the user specifies (`-o notes/`); the
    script creates the slug-named subfolder itself. Never rename or restructure
    existing transcript folders — transcripts are addressed by path.
-4. Verify before committing: the script's self-check must pass (math fidelity
+5. Verify before committing: the script's self-check must pass (math fidelity
    MATCH, balanced `$`, image refs == files on disk), then skim the rendered
    result for anything structural the checks can't see.
-5. Commit and push autonomously once checks pass (standing approval from the
+6. Commit and push autonomously once checks pass (standing approval from the
    repo owner). Never `git add -A` — add only the new transcript folder (and
    tooling, if that is the task).
