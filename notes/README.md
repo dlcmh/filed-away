@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-03 | [programming](programming/) | [USACO finalists, CP for beginners, and the math-for-ML overlap](programming/usaco-finalists-cp-for-beginners-and-the-math-for-ml-overlap/) |
 | 2026-10-02 | [health](health/) | [5x15 deadlifts twice a week at 55](health/5x15-deadlifts-twice-a-week-at-55/) |
 | 2026-10-02 | [machine-learning](machine-learning/) | [Brains vs backprop: LLM limits and neuro-symbolic AI](machine-learning/brains-vs-backprop-llm-limits-and-neuro-symbolic-ai/) |
 | 2026-10-02 | [mathematics](mathematics/) | [HS math gap: CS vs ML](mathematics/hs-math-gap-cs-vs-ml/) |
