@@ -2,7 +2,7 @@
 
 > When C++11 introduced trailing return types, an opinionated comparison of std::printf styles, and the clang-tidy use-trailing-return-type check that enforces the style anyway
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/byl7fa0xkyqbbndzmb) on chat.deepseek.com. 3 questions, 3 answers. The source link expires when the conversation is deleted from DeepSeek.
+> Sources: [part 1](https://chat.deepseek.com/share/byl7fa0xkyqbbndzmb), [part 2 — disabling the lint in VS Code](https://chat.deepseek.com/share/0yu24utkegxufscxw0), on chat.deepseek.com. 4 questions, 4 answers. The source links expire when the conversations are deleted from DeepSeek.
 > Recovered from the shared-conversation HTML export: web citations preserved.
 
 ---
@@ -182,3 +182,67 @@ But:
 My rule stands: enable a check when it fixes a real problem in your code. For trailing return types, the only real problem they solve is *parameter-dependent return types* — and even that is largely obsolete since C++14's return type deduction. So for most codebases, `modernize-use-trailing-return-type` is best left **off**, or set to only flag the cases where it actually matters (which the check doesn't distinguish).
 
 So: the LLVM team didn't prove me wrong — they wrote you a config knob and told you in the first sentence that it's cosmetic. Whether to flip it is a style-guide decision, and my opinion is still "no, thanks."
+
+---
+
+## User
+
+how to disable this lint in vscode
+
+---
+
+## DeepSeek
+
+To disable the `modernize-use-trailing-return-type` lint in VS Code, the method you use depends on whether you are using the **Microsoft C/C++ extension** or the **clangd extension**.
+
+### 🛠️ If you are using the Microsoft C/C++ extension
+
+You can disable this specific check directly in your VS Code settings.
+
+- **Via the Settings UI**: Open your `settings.json` (Ctrl+Shift+P > "Preferences: Open User Settings (JSON)") and add the check name to the disabled list. The check name is `modernize-use-trailing-return-type`[[11]](https://blog.csdn.net/once_day/article/details/146770641?ops_request_misc=elastic_search_misc&request_id=ca1d10ad644f49628056e45c5a74ff73&biz_id=0&utm_medium=distribute.wap_search_result.none-task-blog-2~all~ElasticSearch~search_v2-11-146770641-null-null.wap_first_rank_v2_rank_v29&utm_term=clang%20object-c#2)[[15]](https://github.com/microsoft/vscode-cpptools/discussions/9759#1).
+
+  ```json
+  {
+    "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+      "modernize-use-trailing-return-type"
+    ]
+  }
+  ```
+
+- **Or, use the Quick Fix**: When you see the warning squiggly, hover over it, click "Quick Fix" (or press Ctrl+.), and select the option to **Disable this check**. This will automatically add it to your settings [[11]](https://blog.csdn.net/once_day/article/details/146770641?ops_request_misc=elastic_search_misc&request_id=ca1d10ad644f49628056e45c5a74ff73&biz_id=0&utm_medium=distribute.wap_search_result.none-task-blog-2~all~ElasticSearch~search_v2-11-146770641-null-null.wap_first_rank_v2_rank_v29&utm_term=clang%20object-c#2).
+
+### 🛠️ If you are using the clangd extension
+
+`clangd` reads its configuration from a `config.yaml` file rather than VS Code's `settings.json`.
+
+1. Open the Command Palette (Ctrl+Shift+P) and run **`clangd: Open project configuration file`**[[10]](https://stackoverflow.com/questions/77006517/how-to-display-problems-only-for-the-code-i-changed-added-in-visual-studio-cod#1).
+2. In the file that opens, add the following under `ClangTidy` to remove this specific check [[10]](https://stackoverflow.com/questions/77006517/how-to-display-problems-only-for-the-code-i-changed-added-in-visual-studio-cod#1):
+
+   ```yaml
+   Diagnostics:
+     ClangTidy:
+       Remove: 'modernize-use-trailing-return-type'
+   ```
+
+3. Restart the clangd server (Ctrl+Shift+P > `clangd: Restart server`) for the change to take effect.
+
+### 💡 Alternative: A project-wide `.clang-tidy` file
+
+If you want to disable this check for your entire project (for anyone who uses clang-tidy with it), you can create or edit a `.clang-tidy` file in your project root [[4]](https://manpages.debian.org/trixie/clang-tidy/clang-tidy.1.en.html#1)[[9]](https://stackoverflow.com/feeds/question/74349432#1)[[15]](https://github.com/microsoft/vscode-cpptools/discussions/9759#1).
+
+Add the following line to disable just this check:
+
+```yaml
+Checks: '-modernize-use-trailing-return-type'
+```
+
+If you want to disable **all** clang-tidy checks for the project, you can set it to `Checks: '-*'`[[9]](https://stackoverflow.com/feeds/question/74349432#1)[[13]](https://docs.rs/cpp-linter/2.0.0-rc15/cpp_linter/cli/struct.TidyOptions.html#1).
+
+### ⚠️ A note on `NOLINT` comments
+
+You can also suppress the warning on a specific line by adding a comment, but this is generally discouraged as it clutters the code [[5]](https://fuchsia.dev/fuchsia-src/development/languages/c-cpp/lint?hl=en)[[12]](https://chromium.googlesource.com/chromium/src/+show/refs/tags/81.0.4044.115/docs/clang_tidy.md#1)[[19]](https://chromium.googlesource.com/experimental/chromium/src/+/299ad0d85a8885380c77940cbc08606c6b0a9c1c/docs/clang_tidy.md#1).
+
+```cpp
+// NOLINTNEXTLINE(modernize-use-trailing-return-type)
+int f1();
+```
