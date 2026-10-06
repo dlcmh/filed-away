@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-06 | [programming](programming/) | [C++ trailing return types and the clang-tidy modernize check](programming/c-trailing-return-types-and-the-clang-tidy-modernize-check/) |
 | 2026-10-03 | [hardware](hardware/) | [China's chip playbook: Titan-3, RISC-V accelerators, Top500, FPGA vs RISC-V](hardware/chinas-chip-playbook-titan-3-risc-v-accelerators-top500-fpga-vs-risc-v/) |
 | 2026-10-03 | [hardware](hardware/) | [DeepSeek v4 speed and openPangu on Ascend: 910B today, 950 next](hardware/deepseek-v4-speed-and-openpangu-on-ascend-910b-today-950-next/) |
 | 2026-10-03 | [programming](programming/) | [DeepSeek's stack: C++ vs TileLang vs CANN, and Python as the orchestrator](programming/deepseeks-stack-c-vs-tilelang-vs-cann-and-python-as-the-orchestrator/) |
