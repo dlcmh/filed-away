@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-14 | [programming](programming/) | [C++ how to: absolute value of a number](programming/cpp-how-to-absolute-value-of-a-number.md) |
 | 2026-10-06 | [programming](programming/) | [C++ trailing return types and the clang-tidy modernize check](programming/c-trailing-return-types-and-the-clang-tidy-modernize-check/) |
 | 2026-10-03 | [hardware](hardware/) | [China's chip playbook: Titan-3, RISC-V accelerators, Top500, FPGA vs RISC-V](hardware/chinas-chip-playbook-titan-3-risc-v-accelerators-top500-fpga-vs-risc-v/) |
 | 2026-10-03 | [hardware](hardware/) | [DeepSeek v4 speed and openPangu on Ascend: 910B today, 950 next](hardware/deepseek-v4-speed-and-openpangu-on-ascend-910b-today-950-next/) |
