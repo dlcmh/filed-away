@@ -99,8 +99,9 @@ portability decision, not a language feature.
   defined, so it suits DSP/graphics-style code more than accounting.
 - **C++26 contracts** (P2900): `contract_assert` precondition checks with
   configurable violation semantics (terminate, abort, custom handler).
-  These do not detect overflow by themselves, but they give the hand-written
-  guards from the previous notes a standardized, enforceable spelling.
+  These do not detect overflow by themselves, but they provide a
+  standardized, compiler-enforced notation for the hand-written guards
+  described in the previous notes.
 
 ## Compiler flags: changing what arithmetic means
 
