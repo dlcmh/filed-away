@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-14 | [programming](programming/) | [C++ how to: a function returning the sum of two numbers](programming/cpp-how-to-function-returning-sum-of-two-numbers.md) |
 | 2026-10-14 | [programming](programming/) | [C++ how to: absolute value of a number](programming/cpp-how-to-absolute-value-of-a-number.md) |
 | 2026-10-06 | [programming](programming/) | [C++ trailing return types and the clang-tidy modernize check](programming/c-trailing-return-types-and-the-clang-tidy-modernize-check/) |
 | 2026-10-03 | [hardware](hardware/) | [China's chip playbook: Titan-3, RISC-V accelerators, Top500, FPGA vs RISC-V](hardware/chinas-chip-playbook-titan-3-risc-v-accelerators-top500-fpga-vs-risc-v/) |
