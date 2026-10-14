@@ -20,6 +20,14 @@ Create a single Markdown file under the matching topic subfolder in `notes/`
 top-level `# Title` — the index uses it. Then refresh the index with
 `tools/ds2md.py --reindex -o notes/`; never edit `notes/README.md` directly.
 
+Write in a formal technical register suitable for university-level prose:
+avoid anthropomorphic or colloquial framing — no "lies", "honest(ly)",
+"eats", "footgun", "garbage", or ascribing intent to code and compilers.
+State the behavior and the consequence directly instead ("is
+mathematically inconsistent", "truncates", "produces an implicit
+conversion"). This applies to hand-written notes and to titles/descriptions
+given to the converter; do not rewrite transcript bodies' original wording.
+
 ## Adding a transcript from a chat HTML export
 
 1. Use the converter: `tools/ds2md.py <input.html> -o <folder>/` — setup,
