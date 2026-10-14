@@ -102,3 +102,7 @@ hazard to document.
 - External/untrusted integers: widen to `long long`, or use the pre-addition
   guard; a sanitizer build in development confirms the unguarded form's
   undefined behavior, but the boundary check is what production relies on.
+
+For the ecosystem-level answers — checked-arithmetic libraries, compiler
+flags, and strategies that eliminate the guards entirely — see
+[C++ how to: checked arithmetic and UB avoidance](cpp-checked-arithmetic-and-ub-avoidance.md).

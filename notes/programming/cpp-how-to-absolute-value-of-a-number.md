@@ -80,3 +80,5 @@ Related literal pitfall: `int my_num = -2147483648;` does not do what it appears
 
 The general pattern: sanitizers catch what your test inputs happen to trigger; validation at the boundary catches what the world actually sends you.
 
+For the ecosystem-level answers — checked-arithmetic libraries (Boost.SafeNumerics, SafeInt, compiler builtins), compiler flags, and guard-free strategies — see [C++ how to: checked arithmetic and UB avoidance](cpp-checked-arithmetic-and-ub-avoidance.md).
+
