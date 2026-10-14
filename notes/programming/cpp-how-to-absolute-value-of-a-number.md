@@ -1,6 +1,6 @@
 # C++ how to: absolute value of a number
 
-Quick reference for getting `|x|` in C++, including the traps.
+Quick reference for getting `|x|` in C++, including the pitfalls.
 
 ## Integers: `std::abs` from `<cstdlib>`
 
@@ -25,7 +25,7 @@ float  y = std::abs(-2.5f);
 
 For floating point, prefer `std::abs` over the C name `std::fabs` — same behavior, but `fabs` has no overload for integer types (it converts to `double`).
 
-## The traps
+## Pitfalls
 
 1. **`INT_MIN` has no positive counterpart.** `std::abs(INT_MIN)` is undefined behavior (the result `-2147483648` cannot be represented as a positive `int`). The same applies to `LLONG_MIN` and every other integer type's most-negative value. Guard it:
 
@@ -35,11 +35,11 @@ For floating point, prefer `std::abs` over the C name `std::fabs` — same behav
 
    Or compute in a wider type: `std::abs(static_cast<long long>(v))` — still wrong for `LLONG_MIN` itself.
 
-2. **The C `abs` eats floats.** `#include <cstdlib>` + `abs(-3.14)` truncates to `int` and returns `3` — no diagnostic. Keep `<cstdlib>` for integers and `<cmath>` for floats, and keep the `std::` prefix: with `using namespace std;` and both headers included, the overloads disambiguate; with the C headers (`<stdlib.h>`, `<math.h>`) they do not.
+2. **The C `abs` truncates floating-point arguments.** `#include <cstdlib>` + `abs(-3.14)` converts to `int` and returns `3` — no diagnostic. Keep `<cstdlib>` for integers and `<cmath>` for floats, and keep the `std::` prefix: with `using namespace std;` and both headers included, the overloads disambiguate; with the C headers (`<stdlib.h>`, `<math.h>`) they do not.
 
 3. **`fabs` on an int widens.** `std::fabs(-5)` returns `5.0` as a `double`. Harmless in comparisons, wrong when you need an integer.
 
-4. **Unsigned types need no abs.** `-u` on an unsigned is well-defined (modulo arithmetic) and already "positive"; `std::abs` has no unsigned overload, so calling it invites an implicit conversion you did not want.
+4. **Unsigned types need no abs.** `-u` on an unsigned is well-defined (modulo arithmetic) and already non-negative; `std::abs` has no unsigned overload, so calling it produces an implicit conversion that is rarely intended.
 
 ## Beyond scalars
 
@@ -55,9 +55,9 @@ For floating point, prefer `std::abs` over the C name `std::fabs` — same behav
 
 ## Sanitizers detect; boundaries defend
 
-Running `absolute_value(INT_MIN)` under `-fsanitize=undefined` (or `-fsanitize=signed-integer-overflow`) reports `negation of -2147483648 cannot be represented in type 'int'` at runtime — invaluable in development. But sanitizers ship in nothing: production builds run unsanitized, so the `INT_MIN` arriving from user input, a file, or a network message goes straight back to silent wraparound. Negating `0x80000000` on two's-complement hardware yields `0x80000000` again, so the function "works" and returns `INT_MIN` — plausible-looking garbage, which is the most dangerous kind of UB.
+Running `absolute_value(INT_MIN)` under `-fsanitize=undefined` (or `-fsanitize=signed-integer-overflow`) reports `negation of -2147483648 cannot be represented in type 'int'` at runtime — invaluable in development. But sanitizers are compile-time opt-in and are not enabled in production builds, so an `INT_MIN` arriving from user input, a file, or a network message once again wraps around silently. On two's-complement hardware, negating `0x80000000` yields `0x80000000` again, so the function appears to work and returns `INT_MIN` — an incorrect result that is plausible on its face, and precisely the form of undefined behavior that is hardest to detect in the field.
 
-If the function accepts values from outside, guard it at the boundary, in order of honesty:
+If the function accepts values from outside, guard it at the boundary. The options, from most explicit to least:
 
 1. **Guard the negation and pick a policy** for the impossible case:
 
@@ -70,13 +70,13 @@ If the function accepts values from outside, guard it at the boundary, in order 
    }
    ```
 
-   Returning `INT_MIN` is what most real code effectively does, but it lies mathematically (|−2³¹| ≠ −2³¹), so throwing or aborting is the honest choice.
+   Returning `INT_MIN` is what most real code effectively does, but it is mathematically inconsistent (|−2³¹| ≠ −2³¹), so throwing or aborting is the well-defined choice.
 
 2. **Widen the domain**: take and return `long long`, negating through the wider type. That fixes `INT_MIN`-of-`int` inputs entirely; only `LLONG_MIN` remains pathological and worth documenting.
 
 3. **Delegate to `std::abs`** — and note it has the *same* UB. The standard library does not guard this for you; the hand-rolled version is no worse.
 
-Related literal footgun: `int my_num = -2147483648;` does not do what it looks like — the literal `2147483648` doesn't fit in `int`, so it becomes `long` (or warns), and the negation applies to that. It happens to produce `INT_MIN` on common platforms, but the portable spelling is `INT_MIN` from `<climits>`. The constant for the UB case is the one place the literal fights you.
+Related literal pitfall: `int my_num = -2147483648;` does not do what it appears to — the literal `2147483648` does not fit in `int`, so it becomes `long` (or triggers a warning), and the negation applies to that. It happens to produce `INT_MIN` on common platforms, but the portable spelling is `INT_MIN` from `<climits>`. The constant for the undefined-behavior case is exactly where the literal form is least reliable.
 
 The general pattern: sanitizers catch what your test inputs happen to trigger; validation at the boundary catches what the world actually sends you.
 
