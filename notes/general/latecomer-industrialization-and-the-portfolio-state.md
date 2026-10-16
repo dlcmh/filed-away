@@ -7,8 +7,8 @@ model of industrial investment.
 ## Certification, not technology, is the bottleneck
 
 Mature-industry entrants import certification, not just technology. The C919 is
-the pure case: the airframe is COMAC's own design, but the load-bearing
-certifiable subsystems — LEAP engines (CFM), avionics and fly-by-wire
+the pure case: the airframe is COMAC's own design, but the subsystems
+critical to certification — LEAP engines (CFM), avionics and fly-by-wire
 (GE/Honeywell/Rockwell Collins), landing gear (Liebherr) — are imported from
 suppliers whose certification pedigrees the FAA/EASA system demands. This made
 the aircraft certifiable by CAAC years earlier than a clean-sheet supply chain

@@ -175,7 +175,7 @@ decisions:
 - **Honest debug/release split**: checks where they will be seen (debug, CI),
   escape hatches where performance requires them.
 
-The one defense for C++: its integer rules are load-bearing for fifty years of
+The one defense for C++: its integer rules underpin fifty years of
 ABI, embedded targets, and pre-standard code. Rust had the freedom of a blank
 slate. For new code, the C++ mitigations in this note approximate, at the cost
 of discipline, what Rust encodes in the type names and method set.
