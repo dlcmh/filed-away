@@ -156,6 +156,30 @@ usual caveat that they change the machine the compiler targets:
    the range where the internal arithmetic is trivially safe. This
    centralizes checking where data enters, instead of at every operation.
 
+## The Rust contrast
+
+Rust is the reference design for "guarantee by mechanism," via four stacked
+decisions:
+
+- **Fixed-width primitives**: `i32`/`u64` are 32 and 64 bits by definition,
+  everywhere. C++ has had the equivalent (`<cstdint>`) since C++11, but as
+  opt-in typedefs beside a default `int` whose width follows the platform ABI.
+- **Checked by default**: in debug builds, `a + b` that overflows panics with
+  file, line, and operands; in release it wraps as documented policy.
+  Per-operation opt-outs cover the full menu — `checked_add` (`Option`),
+  `saturating_add` (clamp), `wrapping_add` (explicit wrap), `overflowing_add`
+  (result plus flag). No library, no builtins, no flags — one-character-apart
+  methods on every integer type.
+- **No implicit conversions**: `i32 + i64` is a compile error. The entire
+  truncating-`abs` / widening-`fabs` category does not exist.
+- **Honest debug/release split**: checks where they will be seen (debug, CI),
+  escape hatches where performance requires them.
+
+The one defense for C++: its integer rules are load-bearing for fifty years of
+ABI, embedded targets, and pre-standard code. Rust had the freedom of a blank
+slate. For new code, the C++ mitigations in this note approximate, at the cost
+of discipline, what Rust encodes in the type names and method set.
+
 ## Choosing among them
 
 | Situation | First choice |

@@ -4,6 +4,9 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-17 | [general](general/) | [Automation, vocation prestige, and the dignity endgame](general/automation-vocation-prestige-and-the-dignity-endgame.md) |
+| 2026-10-17 | [general](general/) | [Coercion of a peer, and chartered champions](general/coercion-of-a-peer-and-chartered-champions.md) |
+| 2026-10-17 | [general](general/) | [Latecomer industrialization: certification, catch-up, and the portfolio state](general/latecomer-industrialization-and-the-portfolio-state.md) |
 | 2026-10-14 | [programming](programming/) | [C++ how to: a function returning the sum of two numbers](programming/cpp-how-to-function-returning-sum-of-two-numbers.md) |
 | 2026-10-14 | [programming](programming/) | [C++ how to: absolute value of a number](programming/cpp-how-to-absolute-value-of-a-number.md) |
 | 2026-10-14 | [programming](programming/) | [C++ how to: checked arithmetic — libraries, compiler flags, and automatic strategies for numeric UB](programming/cpp-checked-arithmetic-and-ub-avoidance.md) |
