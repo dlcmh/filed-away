@@ -2,7 +2,7 @@
 
 > Verbatim extract of a Google AI Mode conversation dated 22–23 October 2026, printed as a 137-page PDF.
 >
-> Source: [`TBDR.pdf`](TBDR.pdf). Page headers, navigation, search-result cards, citation pills, and graphical elements are omitted. Answer prose and code are reproduced from the PDF; questions marked with an asterisk were truncated in the PDF and are reconstructed from the answers. A few line-order artifacts in the PDF's text layer are corrected where the intended sentence is unambiguous; some code indentation is flattened by that layer.
+> Source: [`TBDR.pdf`](TBDR.pdf). Page headers, navigation, search-result cards, citation pills, and graphical elements are omitted, except for the Star Wars: Squadrons screenshot discussed in the conversation, which is reproduced at the relevant turn. Answer prose and code are reproduced from the PDF; questions marked with an asterisk were truncated in the PDF and are reconstructed from the answers. A few line-order artifacts in the PDF's text layer are corrected where the intended sentence is unambiguous; some code indentation is flattened by that layer.
 
 ## User
 
@@ -3981,6 +3981,8 @@ procedural targeting grid radar lines in Slang?
 ## User
 
 Damn I see what you mean about Star Wars: Squadrons - this is gorgeous.*
+
+![Star Wars: Squadrons cockpit view with a Star Destroyer in the distance](images/star-wars-squadrons.jpg)
 
 ## Google AI Mode
 
