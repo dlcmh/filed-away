@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-10-23 | [programming](programming/) | [C++ games on macOS with Metal: a Google AI Mode transcript](programming/cpp-games-on-macos-with-metal-google-ai-mode.md) |
+| 2026-10-23 | [programming](programming/) | [SIMD in C++ 3D games](programming/simd-in-c-3d-games/) |
 | 2026-10-23 | [hardware](hardware/) | [TBDR GPU architecture: a verbatim Google AI Mode transcript](hardware/tbdr-gpu-architecture-google-ai-mode/) |
 | 2026-10-17 | [general](general/) | [Automation, vocation prestige, and the dignity endgame](general/automation-vocation-prestige-and-the-dignity-endgame.md) |
 | 2026-10-17 | [programming](programming/) | [C++ how to: checked arithmetic — libraries, compiler flags, and automatic strategies for numeric UB](programming/cpp-checked-arithmetic-and-ub-avoidance.md) |
