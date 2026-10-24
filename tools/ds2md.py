@@ -646,11 +646,13 @@ def run_checks(md, src_tex, images_dir, args):
     match = sorted(EMITTED_TEX) == sorted(src_tex)
     print(f"check math fidelity (source vs emitted): {'MATCH' if match else 'FAIL'}")
     ok &= match
+    # Literal dollars in fenced code (e.g. a shell prompt) are not inline math.
+    prose = re.sub(r"```.*?```", "", md, flags=re.S)
     expected = 2 * len(MATH_SLOTS)
-    good = md.count("$") == expected
-    print(f"check inline $ balance ({md.count('$')} == {expected}): {'OK' if good else 'FAIL'}")
+    good = prose.count("$") == expected
+    print(f"check inline $ balance ({prose.count('$')} == {expected}): {'OK' if good else 'FAIL'}")
     ok &= good
-    odd = [i + 1 for i, l in enumerate(md.split("\n")) if l.count("$") % 2 == 1]
+    odd = [i + 1 for i, l in enumerate(prose.split("\n")) if l.count("$") % 2 == 1]
     good = not odd
     print(f"check per-line $ pairing: {'OK' if good else 'FAIL ' + str(odd[:5])}")
     ok &= good
