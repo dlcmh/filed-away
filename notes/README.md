@@ -7,11 +7,11 @@ Notes in this collection, newest first.
 | 2026-10-24 | [programming](programming/) | [Autorelease pool lifetime in metal-cpp: keep it wide, use RAII](programming/metal-cpp-autorelease-pool-lifetime-raii.md) |
 | 2026-10-24 | [programming](programming/) | [Autorelease pools in metal-cpp: drain versus release](programming/metal-cpp-autorelease-pool-drain-vs-release.md) |
 | 2026-10-24 | [programming](programming/) | [C++ main signatures and char* argv[]](programming/c-main-signatures-and-char-argv/) |
+| 2026-10-24 | [programming](programming/) | [How a blue background reaches the screen in Metal](programming/metal-blue-window-object-graph.md) |
 | 2026-10-24 | [programming](programming/) | [SDL_WINDOW_METAL is a capability hint, not Metal initialization](programming/sdl-window-metal-capability-hint.md) |
 | 2026-10-24 | [programming](programming/) | [The C++ arrow operator: accessing members through pointers](programming/cpp-arrow-operator-member-access.md) |
 | 2026-10-24 | [programming](programming/) | [Where the asterisk goes in a C++ pointer declaration](programming/cpp-pointer-declaration-asterisk-placement.md) |
 | 2026-10-24 | [programming](programming/) | [Why BGRA8Unorm does not mean BGR colors in a Metal shader](programming/metal-bgra8unorm-color-order.md) |
-| 2026-10-24 | [programming](programming/) | [Why a blue Metal window requires so many objects](programming/metal-blue-window-object-graph.md) |
 | 2026-10-23 | [programming](programming/) | [C++ games on macOS with Metal: a Google AI Mode transcript](programming/cpp-games-on-macos-with-metal-google-ai-mode.md) |
 | 2026-10-23 | [programming](programming/) | [SIMD in C++ 3D games](programming/simd-in-c-3d-games/) |
 | 2026-10-23 | [hardware](hardware/) | [TBDR GPU architecture: a verbatim Google AI Mode transcript](hardware/tbdr-gpu-architecture-google-ai-mode/) |

@@ -1,124 +1,181 @@
-# Why a blue Metal window requires so many objects
+# How a blue background reaches the screen in Metal
 
-> An architecture note on [`src/apps/darkbluewindow/main.cpp`](https://github.com/dlcmh/cppgamearch/blob/main/src/apps/darkbluewindow/main.cpp). The program clears a window to dark blue; the object graph is larger than the visual result because it exercises the explicit Metal swapchain path.
+> A beginner's walkthrough of [`src/apps/darkbluewindow/main.cpp`](https://github.com/dlcmh/cppgamearch/blob/main/src/apps/darkbluewindow/main.cpp). The program performs a sequence of explicit steps because three systems participate in one frame: the window system, the GPU API, and the display compositor.
 
-The code can look disproportionate: a window, a view, a layer, a GPU device, a command queue, a render pass, a drawable, a command buffer, an encoder, and an autorelease pool, all to produce a blue rectangle. The objects are not arbitrary. Each one has a distinct owner, lifetime, and responsibility, and the handoffs occur at the boundaries between SDL, Core Animation, Metal, and Cocoa.
+Rendering a single color still requires a chain of objects. Each object answers a different question: where the window is, which GPU is used, which image is being written, how commands are submitted, and when the image is presented. This note follows the program in execution order and explains the role of each stage.
 
-## The program clears; it does not draw
+## The mental model
 
-The blue background is produced by a render pass with a clear load action:
+A frame is an image. The application obtains an image from the window's Metal layer, records commands that write into it, submits those commands to the GPU, and presents the image to the display.
+
+The work is split across three layers:
+
+- **Window and platform:** SDL (Simple DirectMedia Layer) creates the native window, pumps events, and exposes a Metal-capable view.
+- **GPU submission:** Metal provides the device, command queue, command buffers, encoders, and render passes.
+- **Presentation:** Core Animation, macOS's compositing framework, supplies the `CAMetalLayer` and the drawable textures that the display compositor reads.
+
+The compositor combines the application's surface with other windows and sends the result to the display.
+
+The CPU records commands. The GPU executes them asynchronously. The compositor displays the result when the frame is presented.
+
+## Step 1: Create the window
 
 ```cpp
+SDL_Init(SDL_INIT_VIDEO);
+SDL_Window* window = SDL_CreateWindow(
+    "darkbluewindow", 1280, 720, SDL_WINDOW_METAL);
+```
+
+`SDL_WINDOW_METAL` is a capability flag. It tells SDL that the window may later host a Metal view. It does not create a GPU device or start rendering. On macOS, the result is still an ordinary `NSWindow` managed by Cocoa.
+
+The program uses SDL's event API. It polls events, checks for `SDL_EVENT_QUIT`, and keeps the window alive until the loop ends.
+
+## Step 2: Connect to the GPU
+
+```cpp
+MTL::Device* device = MTL::CreateSystemDefaultDevice();
+```
+
+`MTL::Device` represents the GPU. It is the factory for textures, buffers, command queues, and pipeline state. The device is independent of the window; the window is a display surface, while the device is the execution resource.
+
+metal-cpp wraps Apple's Objective-C frameworks. Those frameworks use reference counting, and temporary objects such as the string returned by `device->name()` are autoreleased. An `NS::AutoreleasePool` gives those objects a defined cleanup point:
+
+```cpp
+NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
+SDL_Log("Metal device: %s", device->name()->utf8String());
+```
+
+The program also creates a smaller pool inside the frame loop, so temporary objects from each frame are released at the end of that frame.
+
+## Step 3: Give the window a Metal surface
+
+A window alone cannot receive GPU output. The application needs a Metal layer attached to the window:
+
+```cpp
+SDL_MetalView view = SDL_Metal_CreateView(window);
+CA::MetalLayer* layer =
+    static_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(view));
+
+layer->setDevice(device);
+layer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+```
+
+`SDL_Metal_CreateView` creates an `NSView` backed by a `CAMetalLayer` and installs it in the window. `SDL_Metal_GetLayer` returns the layer as an opaque pointer, which the program casts to `CA::MetalLayer`.
+
+The layer is the bridge between the operating system's compositor and the GPU. It owns a small set of drawable textures, often called a swapchain. A drawable is one frame-sized image that the layer can make available to the compositor. Each frame, the application requests one of those images, writes into it, and presents it.
+
+Two configuration calls complete the association:
+
+- `setDevice(device)` tells the layer which GPU produces its images. SDL deliberately leaves this association to the application.
+- `setPixelFormat(MTL::PixelFormatBGRA8Unorm)` chooses the byte layout of the drawable textures. The format describes memory storage; shader code still uses logical RGBA components. See [Why BGRA8Unorm does not mean BGR colors in a Metal shader](metal-bgra8unorm-color-order.md) for the distinction.
+
+The layer is owned by the view. The application configures it but does not release it.
+
+## Step 4: Prepare the submission machinery
+
+Two long-lived objects are created before the loop:
+
+```cpp
+MTL::CommandQueue* commandQueue = device->newCommandQueue();
+
+MTL::RenderPassDescriptor* pass = MTL::RenderPassDescriptor::alloc()->init();
+MTL::RenderPassColorAttachmentDescriptor* color =
+    pass->colorAttachments()->object(0);
+
 color->setLoadAction(MTL::LoadActionClear);
 color->setStoreAction(MTL::StoreActionStore);
 color->setClearColor(MTL::ClearColor::Make(0.05, 0.05, 0.12, 1.0));
 ```
 
-The render command encoder contains no draw calls and no pipeline state. It begins the pass, which clears the drawable texture, and ends the pass, which stores the result. The program is therefore a test of the presentation path, not of a shader or a mesh. That is why the object graph is mostly initialization and submission machinery rather than rendering logic.
+The command queue is the channel through which command buffers reach the GPU. It is created once because it is a long-lived submission resource.
 
-## The object graph
+The render pass descriptor is a recipe, not GPU work. An attachment is a texture that the pass reads or writes; this pass has one color attachment. The descriptor states:
 
-```text
-SDL_Window
-  └─ SDL_Metal_CreateView
-       └─ SDL_MetalView
-            └─ SDL_Metal_GetLayer
-                 └─ CA::MetalLayer
-                      ├─ setDevice(MTL::Device)
-                      └─ nextDrawable
-                           └─ CA::MetalDrawable
-                                └─ texture()
-                                     └─ render pass color attachment
+- which texture is the color attachment;
+- what happens when the pass begins (`LoadActionClear`);
+- what happens when the pass ends (`StoreActionStore`);
+- which color is used for the clear.
 
-MTL::Device
-  └─ MTL::CommandQueue
-       └─ MTL::CommandBuffer
-            └─ MTL::RenderCommandEncoder(render pass)
-                 └─ endEncoding
-                      └─ presentDrawable
-                           └─ commit
-```
+The descriptor is created once. Each frame, the program replaces its texture with the current drawable's texture.
 
-| Object | Created by | Lifetime | Responsibility |
-| --- | --- | --- | --- |
-| `SDL_Window` | SDL | Until `SDL_DestroyWindow` | Native window, event loop, platform surface |
-| `MTL::Device` | `MTL::CreateSystemDefaultDevice` | Application-owned until release | GPU connection and resource factory |
-| `NS::AutoreleasePool` | `alloc()->init()` | Until `drain()` | Cocoa/metal-cpp temporary object cleanup |
-| `SDL_MetalView` | `SDL_Metal_CreateView` | Until `SDL_Metal_DestroyView` | Cocoa view that hosts the Metal layer |
-| `CA::MetalLayer` | SDL, retrieved as a borrowed pointer | Owned by the view | Drawable provider and pixel-format configuration |
-| `MTL::CommandQueue` | `newCommandQueue` | Application-owned until release | Serial submission of command buffers |
-| `MTL::RenderPassDescriptor` | `alloc()->init()` | Application-owned until release | Render target attachments, clear/store behavior |
-| `CA::MetalDrawable` | `layer->nextDrawable()` | Per frame, through presentation | Texture that represents the current frame |
-| `MTL::CommandBuffer` | `commandQueue->commandBuffer()` | Per frame, through completion | Recorded GPU commands |
-| `MTL::RenderCommandEncoder` | `commandBuffer->renderCommandEncoder(pass)` | Per frame, until `endEncoding` | Encodes the render pass |
+## Step 5: Record and submit one frame
 
-The per-frame handoff is compact:
+The frame loop performs the core sequence:
 
 ```cpp
 CA::MetalDrawable* drawable = layer->nextDrawable();
 if (drawable) {
     color->setTexture(drawable->texture());
+
     MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-    MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(pass);
+    MTL::RenderCommandEncoder* encoder =
+        commandBuffer->renderCommandEncoder(pass);
+
     encoder->endEncoding();
+
     commandBuffer->presentDrawable(drawable);
     commandBuffer->commit();
 }
 ```
 
-The brevity is deceptive: each call binds a resource or transfers a frame into the submission path.
+The sequence has five conceptual steps:
 
-The layer is a borrowed pointer from SDL; the application configures it but does not own it. The device, queue, and pass descriptor are long-lived application objects. The drawable, command buffer, and encoder are per-frame objects. The per-frame autorelease pool covers the temporary Cocoa objects created during that frame.
+1. **Acquire an image.** `nextDrawable()` returns a drawable, which contains a texture. A texture is GPU memory holding pixels; the drawable pairs that texture with presentation metadata. The layer may wait if too many frames are still in flight.
+2. **Bind the target.** `color->setTexture(...)` makes that texture the color attachment of the render pass.
+3. **Record commands.** A command buffer is created from the queue. A render command encoder begins the pass. The clear load action writes the dark blue color into the texture.
+4. **Close the pass.** `endEncoding()` finishes the encoder. No draw calls are recorded; the clear and store actions are the entire pass.
+5. **Present and submit.** `presentDrawable(drawable)` schedules the image for display, and `commit()` submits the command buffer to the GPU.
 
-## Why each handoff exists
+The CPU then continues. The GPU executes the command buffer asynchronously, and the compositor displays the drawable when the work completes.
 
-### SDL window to Metal view
+## Step 6: Release resources
 
-SDL owns the window and the platform event loop. `SDL_WINDOW_METAL` only marks the window as capable of hosting a Metal view; it does not initialize Metal. `SDL_Metal_CreateView` performs the Cocoa-specific work of creating an `NSView` backed by a `CAMetalLayer` and installing it in the window.
+metal-cpp objects are reference counted. The program explicitly releases the pass, queue, view, device, window, and autorelease pool:
 
-### Metal view to `CA::MetalLayer`
+```cpp
+pass->release();
+commandQueue->release();
+SDL_Metal_DestroyView(view);
+device->release();
+SDL_DestroyWindow(window);
+SDL_Quit();
+pool->drain();
+```
 
-SDL exposes the layer as an opaque pointer. The application casts it to `CA::MetalLayer`, sets the `MTL::Device`, and chooses the pixel format. SDL deliberately does not own the device or the renderer, so this association remains the application's responsibility.
+The order reflects ownership: the pass and queue are released before the device that created them, the view is destroyed before the window, and the pool is drained after the objects that may have created autoreleased temporaries.
 
-### Device to command queue
+## Clear is not draw
 
-The `MTL::Device` creates resources and the `MTL::CommandQueue`. The queue is created once because command buffers are submitted through a long-lived queue; creating a queue per frame would add overhead without changing the result.
+The blue background is produced by a clear, not by a draw call. The render pass begins with `LoadActionClear`, which writes the clear color into the drawable texture. The encoder contains no pipeline state, vertex data, or fragment shader.
 
-### Layer to drawable
+A render pipeline is the configured GPU program and state used by draw calls: the vertex and fragment shader stages, blending rules, and attachment formats. A clear does not need a pipeline because it does not process geometry. Adding a triangle or a sprite would require a pipeline object, a vertex buffer, and a draw call inside the encoder, while reusing the same device, queue, layer, drawable, pass, and command buffer.
 
-The layer is the source of drawables. `nextDrawable()` returns the texture for the current frame. The render pass descriptor replaces its previous color texture with the new drawable's texture, and the encoder clears that texture.
+## The objects as questions
 
-### Command buffer to encoder to presentation
+| Object | Question it answers |
+| --- | --- |
+| `SDL_Window` | Where is the operating-system window? |
+| `MTL::Device` | Which GPU is used? |
+| `NS::AutoreleasePool` | When are Cocoa temporary objects released? |
+| `SDL_MetalView` | Which native view hosts the Metal surface? |
+| `CA::MetalLayer` | Which layer supplies images to the compositor? |
+| `MTL::CommandQueue` | Where are command buffers submitted? |
+| `MTL::RenderPassDescriptor` | Which images are written, and how are they loaded and stored? |
+| `CA::MetalDrawable` | Which image belongs to this frame? |
+| `MTL::CommandBuffer` | What work belongs to this submission? |
+| `MTL::RenderCommandEncoder` | Which render pass is currently being recorded? |
 
-The command buffer records the work, the render command encoder records the pass, and `presentDrawable` associates the finished texture with the layer's presentation path. `commit` submits the buffer to the queue. This sequence is the explicit Metal model: the application states what is rendered, where it is stored, and when it is presented.
+## What to remember
 
-### Autorelease pool
+- A frame is an image obtained from the layer, filled by GPU commands, and presented to the display.
+- The layer is the bridge between the window system and the GPU.
+- A command queue accepts command buffers; a command buffer records work; an encoder records one pass.
+- A render pass descriptor defines the target texture and the load/store behavior.
+- A clear writes a color without drawing geometry.
+- metal-cpp objects require explicit release; autorelease pools manage Cocoa temporaries.
 
-metal-cpp wraps Objective-C objects in C++ classes that follow Cocoa's reference-counting conventions. Temporary objects such as the device name string and internal Foundation objects are autoreleased. The pool gives those objects a defined cleanup point, and the per-frame pool prevents temporary objects from accumulating across frames.
+The next steps in the application are a render pipeline, shaders, vertex data, and draw calls. Those stages fit inside the same frame structure.
 
-## Is the complexity justified?
+## Reference
 
-The answer depends on the purpose of the program.
-
-**As a learning scaffold, yes.** The repository is being built step by step: first a window, then a Metal-capable window, then a cleared window. Each stage exposes one layer of the platform stack. Keeping the objects visible makes the Metal submission model observable; hiding them behind a helper would remove the lesson.
-
-**As the minimum for a reusable Metal renderer, yes.** A device, queue, layer, pass descriptor, drawable, command buffer, and encoder are the minimum explicit objects needed to present a frame. Once a pipeline and draw calls are added, they reuse the same objects. The blue clear is the smallest vertical slice through the full path.
-
-**As the minimum for a blue window, no.** If the only requirement were a blue rectangle with no Metal-specific work, `SDL_Renderer` would be shorter, and an `MTKView` with a clear color would avoid most of the explicit Metal setup. The explicit path is justified by the intention to build a custom engine, not by the visual result.
-
-## Where the sample is over-explicit
-
-The object graph is justified, but `main.cpp` is still a demonstration rather than a finished architecture:
-
-- Cleanup is repeated on every error path. A small RAII wrapper for the device, queue, pass, view, and autorelease pool would remove the duplication without hiding the Metal sequence.
-- The render pass descriptor is created once and its texture is replaced each frame. That is acceptable for a single in-flight frame, but a renderer with multiple frames in flight should use per-frame descriptors or otherwise ensure that no descriptor is mutated while an earlier frame is still being encoded or executed.
-- The loop commits command buffers without explicit frame pacing or a completion wait. The layer's drawable availability provides some backpressure, but a production renderer needs a defined policy for frames in flight and shutdown.
-- Resize handling and drawable-size changes are absent. A renderer that presents continuously must recreate size-dependent state when the window changes.
-
-None of these points invalidates the object graph. They identify what remains to be encapsulated as the sample grows into an engine.
-
-## Summary
-
-The apparent gymnastics are the explicit ownership and submission model of Metal combined with SDL's division of responsibility. SDL owns the window and view; the application owns the device, queue, pass, and frame encoding; Core Animation supplies the layer and drawables; Foundation supplies the autorelease pool. A blue background requires clearing a drawable, and clearing a drawable requires the swapchain and command-submission path.
-
-The complexity is justified as a learning scaffold and as the foundation of a custom renderer. It would be unnecessary if the goal were only a blue window.
+- Source file: [`darkbluewindow/main.cpp`](https://github.com/dlcmh/cppgamearch/blob/main/src/apps/darkbluewindow/main.cpp).
