@@ -55,7 +55,11 @@ The `pool` variable is a handle used to drain that stack entry. It does not need
 
 Nested pools follow the same stack rule. The per-frame pool becomes the top pool for the duration of an iteration. When it drains, the outer pool becomes the top again, and later autoreleased objects are registered there.
 
-The rule is thread-specific. A pool created on the main thread does not collect autoreleased objects created on a worker thread. Code that creates Cocoa objects on another thread must establish a pool on that thread, or use an API that provides one.
+The rule is thread-specific. A pool created on the main thread does not collect autoreleased objects created on a worker thread. A secondary thread does not inherit the main thread's pool; code that creates Cocoa objects on another thread must establish a pool on that thread, or use an API that provides one.
+
+The frame loop in this program is not on a worker thread. It runs in `main`, on the main thread. The per-frame pool is not present because the loop was moved to another thread; it is present because the loop is long-lived. Without it, autoreleased objects created during each iteration would remain registered with the outer pool until `main` ends, so memory use would grow with the number of frames. Draining once per iteration bounds those temporaries to one frame.
+
+The per-frame pool is therefore about lifetime granularity, not thread migration. The distinction is easy to miss because the same mechanism, a per-thread pool stack, serves both purposes. If the loop is later moved to a worker thread, that thread needs its own pool stack, and the per-iteration pool remains useful for the same lifetime reason.
 
 ## Step 3: Give the window a Metal surface
 
@@ -193,6 +197,7 @@ A render pipeline is the configured GPU program and state used by draw calls: th
 - A render pass descriptor defines the target texture and the load/store behavior.
 - A clear writes a color without drawing geometry.
 - Autorelease pools are per-thread stacks; code on the same thread uses the current pool without receiving it as an argument.
+- A per-iteration pool bounds temporary objects to one frame even when the loop runs on the main thread.
 - Owned metal-cpp objects require explicit release; autorelease pools manage Cocoa temporaries.
 
 The next steps in the application are a render pipeline, shaders, vertex data, and draw calls. Those stages fit inside the same frame structure.
