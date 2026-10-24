@@ -6,6 +6,7 @@ Notes in this collection, newest first.
 | --- | --- | --- |
 | 2026-10-24 | [programming](programming/) | [C++ main signatures and char* argv[]](programming/c-main-signatures-and-char-argv/) |
 | 2026-10-24 | [programming](programming/) | [SDL_WINDOW_METAL is a capability hint, not Metal initialization](programming/sdl-window-metal-capability-hint.md) |
+| 2026-10-24 | [programming](programming/) | [The C++ arrow operator: accessing members through pointers](programming/cpp-arrow-operator-member-access.md) |
 | 2026-10-23 | [programming](programming/) | [C++ games on macOS with Metal: a Google AI Mode transcript](programming/cpp-games-on-macos-with-metal-google-ai-mode.md) |
 | 2026-10-23 | [programming](programming/) | [SIMD in C++ 3D games](programming/simd-in-c-3d-games/) |
 | 2026-10-23 | [hardware](hardware/) | [TBDR GPU architecture: a verbatim Google AI Mode transcript](hardware/tbdr-gpu-architecture-google-ai-mode/) |
