@@ -47,6 +47,16 @@ SDL_Log("Metal device: %s", device->name()->utf8String());
 
 The program also creates a smaller pool inside the frame loop, so temporary objects from each frame are released at the end of that frame.
 
+### Why the pool is not passed to later calls
+
+An autorelease pool is not a context object that must be handed to every function that creates temporary objects. It is a per-thread stack. Creating a pool pushes it onto the current thread's stack. When code on that thread sends an object an `autorelease` message, the object is registered with the pool at the top of the stack. Draining the pool pops it and releases the objects registered with it.
+
+The `pool` variable is a handle used to drain that stack entry. It does not need to travel with calls such as `SDL_Metal_CreateView`, `layer->nextDrawable()`, or `commandQueue->commandBuffer()`. Those calls run on the same thread, so any autoreleased temporaries they create join the current top pool automatically.
+
+Nested pools follow the same stack rule. The per-frame pool becomes the top pool for the duration of an iteration. When it drains, the outer pool becomes the top again, and later autoreleased objects are registered there.
+
+The rule is thread-specific. A pool created on the main thread does not collect autoreleased objects created on a worker thread. Code that creates Cocoa objects on another thread must establish a pool on that thread, or use an API that provides one.
+
 ## Step 3: Give the window a Metal surface
 
 A window alone cannot receive GPU output. The application needs a Metal layer attached to the window:
@@ -103,20 +113,30 @@ The descriptor is created once. Each frame, the program replaces its texture wit
 The frame loop performs the core sequence:
 
 ```cpp
-CA::MetalDrawable* drawable = layer->nextDrawable();
-if (drawable) {
-    color->setTexture(drawable->texture());
+while (running) {
+    NS::AutoreleasePool* framePool = NS::AutoreleasePool::alloc()->init();
 
-    MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-    MTL::RenderCommandEncoder* encoder =
-        commandBuffer->renderCommandEncoder(pass);
+    // ... poll events ...
 
-    encoder->endEncoding();
+    CA::MetalDrawable* drawable = layer->nextDrawable();
+    if (drawable) {
+        color->setTexture(drawable->texture());
 
-    commandBuffer->presentDrawable(drawable);
-    commandBuffer->commit();
+        MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
+        MTL::RenderCommandEncoder* encoder =
+            commandBuffer->renderCommandEncoder(pass);
+
+        encoder->endEncoding();
+
+        commandBuffer->presentDrawable(drawable);
+        commandBuffer->commit();
+    }
+
+    framePool->drain();
 }
 ```
+
+The frame pool is created at the top of each iteration and drained at the end. None of the calls inside the iteration receives it as an argument.
 
 The sequence has five conceptual steps:
 
@@ -156,7 +176,7 @@ A render pipeline is the configured GPU program and state used by draw calls: th
 | --- | --- |
 | `SDL_Window` | Where is the operating-system window? |
 | `MTL::Device` | Which GPU is used? |
-| `NS::AutoreleasePool` | When are Cocoa temporary objects released? |
+| `NS::AutoreleasePool` | Which per-thread pool collects Cocoa temporaries? |
 | `SDL_MetalView` | Which native view hosts the Metal surface? |
 | `CA::MetalLayer` | Which layer supplies images to the compositor? |
 | `MTL::CommandQueue` | Where are command buffers submitted? |
@@ -172,7 +192,8 @@ A render pipeline is the configured GPU program and state used by draw calls: th
 - A command queue accepts command buffers; a command buffer records work; an encoder records one pass.
 - A render pass descriptor defines the target texture and the load/store behavior.
 - A clear writes a color without drawing geometry.
-- metal-cpp objects require explicit release; autorelease pools manage Cocoa temporaries.
+- Autorelease pools are per-thread stacks; code on the same thread uses the current pool without receiving it as an argument.
+- Owned metal-cpp objects require explicit release; autorelease pools manage Cocoa temporaries.
 
 The next steps in the application are a render pipeline, shaders, vertex data, and draw calls. Those stages fit inside the same frame structure.
 
