@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-24 | [programming](programming/) | [Autorelease pools in metal-cpp: drain versus release](programming/metal-cpp-autorelease-pool-drain-vs-release.md) |
 | 2026-10-24 | [programming](programming/) | [C++ main signatures and char* argv[]](programming/c-main-signatures-and-char-argv/) |
 | 2026-10-24 | [programming](programming/) | [SDL_WINDOW_METAL is a capability hint, not Metal initialization](programming/sdl-window-metal-capability-hint.md) |
 | 2026-10-24 | [programming](programming/) | [The C++ arrow operator: accessing members through pointers](programming/cpp-arrow-operator-member-access.md) |
