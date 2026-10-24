@@ -65,6 +65,10 @@ A refactor can break that property. If the pool is created before a new early re
 - `release()` works, but it is less idiomatic and less clear in review.
 - Ensure that every exit path after pool creation reaches the drain.
 
+## See also
+
+- [Autorelease pool lifetime in metal-cpp: keep it wide, use RAII](metal-cpp-autorelease-pool-lifetime-raii.md) covers placement relative to `SDL_Metal_CreateView` and automatic cleanup across early returns.
+
 ## References
 
 - Apple, [Advanced Memory Management Programming Guide: Basic Memory Management Rules](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html).
