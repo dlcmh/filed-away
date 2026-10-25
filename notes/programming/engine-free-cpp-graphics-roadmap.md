@@ -37,6 +37,7 @@ The mathematical foundation is vectors, matrices, quaternions, curves, and surfa
 - *Geometry for Programmers* is a practical treatment of splines and geometric transformations, using Python examples and assuming only high-school mathematics.
 - *Mathematics for Game Programming and Computer Graphics* covers vectors, matrices, meshes, and vertex shaders through Python and PyOpenGL.
 - *Entity-Component System Design Patterns* (2025) covers ECS theory, storage models, and data locality.
+- Khronos Vulkan tutorial, [Data-oriented design appendix](https://github.khronos.org/Vulkan-Site/tutorial/latest/Building_a_Simple_Engine/Appendix/appendix.html#data-oriented-design), for a free architectural reference.
 
 This is also the stage for data-oriented design: contiguous component storage, systems that iterate over components, and the difference between an object model and a data layout. The source places ECS here because it determines the performance ceiling of the game-logic layer, not just the rendering layer.
 
@@ -50,6 +51,7 @@ The first rendering goal is a triangle, not a game. The source’s sequence is w
 - *Computer Graphics Programming in OpenGL with C++* (third edition) covers 3D data, textures, parametric surfaces, and ray tracing with bounding volume hierarchies.
 - *Computer Graphics Through OpenGL* is a broader, more academic alternative with many programs and experiments.
 - *Focus on Curves and Surfaces* is a focused treatment of Bezier curves, B-splines, and NURBS.
+- A minimal OpenGL triangle walkthrough: [KU OpenGL example](https://people.eecs.ku.edu/~jrmiller/Courses/OpenGL/HelloOpenGL/HelloOpenGLBasic/HelloOpenGLBasic.html).
 
 A useful checkpoint is a renderer that draws the same entity positions used by the console game. That demonstrates that the game logic is independent of the presentation layer.
 
@@ -85,6 +87,7 @@ The implementation order is broad phase, narrow phase, contact generation, and c
 
 - *Game Animation Programming with C++* (2025) covers skeletal animation with Assimp, GPU skinning, inverse kinematics, blend trees, and a third-person character case study.
 - *Modern Game Animation in C++* (2025) covers similar ground with an emphasis on integration with ECS and rendering pipelines.
+- Khronos Vulkan tutorial, [Skeletal compute skinning](https://github.khronos.org/Vulkan-Site/tutorial/latest/Advanced_glTF/Skeletal_Compute_Skinning/06_conclusion.html), for a GPU-side reference implementation.
 
 Both titles are independently published; preview the table of contents before purchase. The technical sequence is bone hierarchies, inverse bind matrices, linear blend skinning, dual-quaternion skinning, animation state machines, and inverse kinematics.
 
@@ -95,13 +98,16 @@ Both titles are independently published; preview the table of contents before pu
 - *Real-Time Ray Tracing with DirectX 12 (DXR)* covers reflection, refraction, and transparent materials with hardware-accelerated ray tracing. The algorithms transfer conceptually to Vulkan ray tracing.
 - Nanite has no dedicated book. Epic’s official Nanite documentation is the reliable source.
 - Nyx, an open-source Nanite-style renderer, is useful for studying cluster hierarchy, visibility buffers, and GPU-driven culling.
+- UCSD CSE 272, [Nanite lecture](https://cseweb.ucsd.edu/~tzli/cse272/wi2025/lectures/27_nanite.pdf).
+- Illinois CS 415, [Nanite slides](https://raw.githubusercontent.com/illinois-cs415/illinois-cs415.github.io/main/img/slides/415-NaniteUE5.pdf).
 
 Nanite is best treated as an advanced system to understand after writing a rasterizer. Its core ideas are cluster hierarchies, screen-space error thresholds, a visibility buffer, deferred material evaluation, and GPU-driven culling.
 
 ## Stage 7: Audio and networking
 
-- *Game Audio Programming 5* (2025) covers low-level oscillators, asynchronous multithreaded audio engines, speech systems, and mixing.
-- Unity’s *Multiplayer Networking* e-book covers UDP, RPCs, client-side prediction, server reconciliation, rollback, and deterministic physics. The concepts are engine-agnostic even though the examples are Unity-oriented.
+- *Game Audio Programming 5* (2025) covers low-level oscillators, asynchronous multithreaded audio engines, speech systems, and mixing. [Publisher page](https://www.taylorfrancis.com/books/edit/10.1201/9781003519119/game-audio-programming-5-guy-somberg).
+- Epic Games, [Audio Gameplay Volumes](https://dev.epicgames.com/documentation/unreal-engine/audio-gameplay-volumes-overview), for a production example of spatial audio and volume handling.
+- Unity’s [Multiplayer Networking e-book](https://unity.com/blog/multiplayer-networking-ebook) covers UDP, RPCs, client-side prediction, server reconciliation, rollback, and deterministic physics. The concepts are engine-agnostic even though the examples are Unity-oriented.
 
 Audio and networking are independent subsystems. They can be deferred until the game actually needs sound or multiplayer, but their architectural constraints should be known before the engine’s data model is fixed.
 
@@ -128,11 +134,11 @@ Vulkan is the cross-platform baseline. Metal is the Apple-specific path. Harmony
 
 HarmonyOS-specific additions:
 
-- Vulkan extensions `VK_OHOS_surface` and `VK_OHOS_external_memory` for window surfaces and zero-copy external memory.
+- [Vulkan on HarmonyOS overview](https://developer.huawei.com/consumer/cn/doc/doccenter-references/api/vulkan-overview) and [Vulkan reference](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/vulkan); includes `VK_OHOS_surface` and `VK_OHOS_external_memory` for window surfaces and zero-copy external memory.
 - Node-API bridging between ArkTS and C/C++.
-- XEngine Kit for spatial upscaling and adaptive variable-rate shading.
-- Graphics Accelerate Kit for frame generation and related optimizations.
-- OpenGTX C++ examples for end-to-end integration.
+- [XEngine Kit](https://developer.huawei.com/consumer/en/doc/Tools-Guides/xengine-kit-0000002030297201) for spatial upscaling and adaptive variable-rate shading.
+- [Graphics Accelerate Kit](https://developer.huawei.com/consumer/en/doc/harmonyos-guides/graphics-accelerate-fg-mv-vulkan) for frame generation and related optimizations.
+- [OpenGTX C++ example](https://developer.huawei.com/consumer/cn/codelabsPortal/carddetails/tutorials_OpenGTX) for end-to-end integration.
 
 This track is platform work, not a replacement for the rendering fundamentals.
 
@@ -185,8 +191,21 @@ These are judgments about the direction of the field, not claims taken from the 
 
 - DeepSeek, [shared conversation](https://chat.deepseek.com/share/cgxm9z20u1lmqynire).
 - Khronos, [Vulkan documentation](https://docs.vulkan.org/).
+- Khronos, [Data-oriented design appendix](https://github.khronos.org/Vulkan-Site/tutorial/latest/Building_a_Simple_Engine/Appendix/appendix.html#data-oriented-design).
+- Khronos, [Skeletal compute skinning](https://github.khronos.org/Vulkan-Site/tutorial/latest/Advanced_glTF/Skeletal_Compute_Skinning/06_conclusion.html).
+- KU, [Hello OpenGL example](https://people.eecs.ku.edu/~jrmiller/Courses/OpenGL/HelloOpenGL/HelloOpenGLBasic/HelloOpenGLBasic.html).
 - Apple, [Metal documentation](https://developer.apple.com/documentation/metal).
 - Epic Games, [Nanite virtualized geometry](https://dev.epicgames.com/documentation/unreal-engine/nanite-virtualized-geometry-in-unreal-engine).
+- UCSD CSE 272, [Nanite lecture](https://cseweb.ucsd.edu/~tzli/cse272/wi2025/lectures/27_nanite.pdf).
+- Illinois CS 415, [Nanite slides](https://raw.githubusercontent.com/illinois-cs415/illinois-cs415.github.io/main/img/slides/415-NaniteUE5.pdf).
+- Epic Games, [Audio Gameplay Volumes](https://dev.epicgames.com/documentation/unreal-engine/audio-gameplay-volumes-overview).
+- Unity, [Multiplayer Networking e-book](https://unity.com/blog/multiplayer-networking-ebook).
+- Taylor & Francis, [Game Audio Programming 5](https://www.taylorfrancis.com/books/edit/10.1201/9781003519119/game-audio-programming-5-guy-somberg).
+- Huawei, [Vulkan on HarmonyOS overview](https://developer.huawei.com/consumer/cn/doc/doccenter-references/api/vulkan-overview).
+- Huawei, [Vulkan reference](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/vulkan).
+- Huawei, [XEngine Kit](https://developer.huawei.com/consumer/en/doc/Tools-Guides/xengine-kit-0000002030297201).
+- Huawei, [Graphics Accelerate Kit](https://developer.huawei.com/consumer/en/doc/harmonyos-guides/graphics-accelerate-fg-mv-vulkan).
+- Huawei, [OpenGTX C++ example](https://developer.huawei.com/consumer/cn/codelabsPortal/carddetails/tutorials_OpenGTX).
 - Iowa State University, [3D Vision — NeRFs and INRs](https://trac-ai.iastate.edu/event/3d-vision-nerfs-and-inrs-2/).
 - Deep Blue Academy, [NeRF and 3D Gaussian Splatting: Fundamentals and Common Algorithms](https://www.shenlanxueyuan.com/course/661).
 - Instant-NGP, [Multi-resolution hash encoding](https://arxiv.org/abs/2201.05989).
