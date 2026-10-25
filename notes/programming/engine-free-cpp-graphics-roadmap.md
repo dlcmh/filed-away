@@ -109,10 +109,16 @@ Audio and networking are independent subsystems. They can be deferred until the 
 
 NeRF and 3D Gaussian Splatting are not replacements for the rasterization path; they are an alternative scene representation built on GPU compute and, for NeRF, neural networks.
 
+Courses:
+
 - Iowa State’s “3D Vision — NeRFs and INRs” course is free, requires basic Python and PyTorch, and covers 3D representations, NeRF, and 3DGS with coding assignments.
-- The Instant-NGP paper covers multi-resolution hash encoding.
-- The 3D Gaussian Splatting paper covers explicit Gaussian primitives and splatting.
-- Neural-Rendering-Engine is a Vulkan-based implementation useful for studying the engineering structure.
+- Deep Blue Academy (Shenlan) offers a paid Chinese-language course, “NeRF and 3D Gaussian Splatting: Fundamentals and Common Algorithms”, taught by a professor from Beijing University of Posts and Telecommunications. It runs for more than 13 hours and includes paper walkthroughs and code practice: [course page](https://www.shenlanxueyuan.com/course/661).
+
+Papers and implementations:
+
+- The [Instant-NGP paper](https://arxiv.org/abs/2201.05989) covers multi-resolution hash encoding.
+- The [3D Gaussian Splatting paper](https://arxiv.org/abs/2308.04079) covers explicit Gaussian primitives and splatting.
+- [Neural-Rendering-Engine](https://github.com/Custardtart77/Neural-Rendering-Engine) is a Vulkan-based implementation useful for studying the engineering structure.
 
 The prerequisites are GPU compute, ray marching, and a basic understanding of MLPs and backpropagation. This belongs after the Vulkan compute and ray-tracing material, not in the middle of the rasterization stage.
 
@@ -182,4 +188,8 @@ These are judgments about the direction of the field, not claims taken from the 
 - Apple, [Metal documentation](https://developer.apple.com/documentation/metal).
 - Epic Games, [Nanite virtualized geometry](https://dev.epicgames.com/documentation/unreal-engine/nanite-virtualized-geometry-in-unreal-engine).
 - Iowa State University, [3D Vision — NeRFs and INRs](https://trac-ai.iastate.edu/event/3d-vision-nerfs-and-inrs-2/).
+- Deep Blue Academy, [NeRF and 3D Gaussian Splatting: Fundamentals and Common Algorithms](https://www.shenlanxueyuan.com/course/661).
+- Instant-NGP, [Multi-resolution hash encoding](https://arxiv.org/abs/2201.05989).
+- 3D Gaussian Splatting, [Real-time radiance field rendering](https://arxiv.org/abs/2308.04079).
+- GitHub, [Neural-Rendering-Engine](https://github.com/Custardtart77/Neural-Rendering-Engine).
 - GitHub, [Nyx](https://github.com/moonlovelj/Nyx).
