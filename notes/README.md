@@ -13,6 +13,7 @@ Notes in this collection, newest first.
 | 2026-10-25 | [programming](programming/) | [What alpha means in a fixed-timestep game loop](programming/fixed-timestep-game-loop-alpha.md) |
 | 2026-10-25 | [programming](programming/) | [When clang-tidy says a game-loop method could be static](programming/clang-tidy-game-loop-static-warning.md) |
 | 2026-10-25 | [programming](programming/) | [When to use a newline instead of std::endl in C++](programming/cpp-newline-vs-std-endl.md) |
+| 2026-10-25 | [programming](programming/) | [Why a C++ member function ends with const](programming/cpp-trailing-const-member-functions.md) |
 | 2026-10-24 | [programming](programming/) | [Autorelease pool lifetime in metal-cpp: keep it wide, use RAII](programming/metal-cpp-autorelease-pool-lifetime-raii.md) |
 | 2026-10-24 | [programming](programming/) | [Autorelease pools in metal-cpp: drain versus release](programming/metal-cpp-autorelease-pool-drain-vs-release.md) |
 | 2026-10-24 | [programming](programming/) | [C++ main signatures and char* argv[]](programming/c-main-signatures-and-char-argv/) |
