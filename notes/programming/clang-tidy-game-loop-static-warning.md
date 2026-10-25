@@ -2,7 +2,11 @@
 
 > Based on a DeepSeek conversation about a clang-tidy warning in a game loop: [shared conversation](https://chat.deepseek.com/share/pvfaui51ogz7ycsyuu). The code under discussion is [`chrspaceinvaders/main.cpp`](https://github.com/dlcmh/cppgamearch/blob/main/src/apps/chrspaceinvaders/main.cpp#L53-L57).
 >
-> The original message included a screenshot of the diagnostic. The shared page exposes an empty image placeholder and no retrievable image URL, so the screenshot could not be included.
+> The original message's screenshot of the diagnostic is included below.
+
+![clang-tidy warning that processInput can be made static](images/clang-tidy-static-warning.webp)
+
+*The diagnostic identifies `processInput` as a candidate for conversion to a static member function.*
 
 ## The diagnostic
 
