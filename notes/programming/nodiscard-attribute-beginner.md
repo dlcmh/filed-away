@@ -63,7 +63,15 @@ The message is a diagnostic aid, not part of the function type.
 
 ## Relationship to clang-tidy
 
-clang-tidy's `modernize-use-nodiscard` check suggests the attribute for const member functions and other functions whose return value is normally meaningful. Apply the suggestion selectively; the check identifies candidates, not obligations. A function returning a value for side-effect logging is a poor candidate even if the check flags it.
+clang-tidy's `modernize-use-nodiscard` check operates on the declaration, not on a call site. It proposes `[[nodiscard]]` for a non-template, non-variadic `const` member function that returns a non-void value, has no pointer or non-const reference parameters, and is not a member of a class with mutable members. Such a function has no visible way to change state except through an external effect, so the check treats its return value as the likely purpose of the call.
+
+This is a heuristic. The check does not observe a discarded return value and does not know the programmer's intent; it flags the declaration because the signature matches the pattern. In `Canvas::width()`, the `const` qualifier and the `int` return are sufficient evidence. The same rule does not apply to a function that performs I/O or mutates external state.
+
+Apply the suggestion selectively. The check identifies candidates, not obligations. A function returning a value for side-effect logging is a poor candidate even if the check flags it.
+
+Clangd displays these diagnostics when clang-tidy integration is enabled; the diagnostic prefix `clang-tidy(...)` identifies the source. The compiler itself does not warn about a discarded return value until the function carries `[[nodiscard]]` or an equivalent compiler-specific attribute.
+
+See the [clang-tidy documentation](https://clang.llvm.org/extra/clang-tidy/checks/modernize/use-nodiscard.html) for the full list of conditions.
 
 The [macOS alien-fleet tutorial](macos-character-mode-alien-fleet.md) marks `width()`, `height()`, `bottom()`, `str()`, and a private bounds helper with `[[nodiscard]]`. These are pure queries, so ignoring their results would be a mistake.
 
