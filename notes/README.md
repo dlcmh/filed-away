@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-10-25 | [programming](programming/) | [A beginner's guide to C++ class templates](programming/cpp-class-templates-beginner.md) |
+| 2026-10-25 | [programming](programming/) | [An engine-free C++ graphics roadmap: stages, books, and resources](programming/engine-free-cpp-graphics-roadmap.md) |
 | 2026-10-25 | [programming](programming/) | [Naming the spiral-of-death clamp in a game loop](programming/clang-tidy-magic-number-game-loop/) |
 | 2026-10-25 | [programming](programming/) | [What alpha means in a fixed-timestep game loop](programming/fixed-timestep-game-loop-alpha.md) |
 | 2026-10-25 | [programming](programming/) | [When clang-tidy says a game-loop method could be static](programming/clang-tidy-game-loop-static-warning.md) |
