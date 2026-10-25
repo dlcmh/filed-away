@@ -26,6 +26,8 @@ The program has four classes and a small `main`:
 - `GameLoop` owns the frame clock and the demo reset policy. It accumulates elapsed time, runs fixed updates, renders once per display frame, and limits the render rate. It does not implement the fleet's horizontal movement rules.
 - `main` constructs the objects and starts the loop.
 
+The query methods are marked `[[nodiscard]]`: `width()`, `height()`, `bottom()`, `str()`, and the private `horizontalBounds()`. Discarding their return values is almost always a mistake, and the attribute lets the compiler point it out. It has no runtime cost and addresses clang-tidy's `modernize-use-nodiscard` warning.
+
 ## The complete program
 
 Save this as `alien_fleet.cpp`.
@@ -46,8 +48,8 @@ public:
         : width_(width), height_(height),
           cells_(static_cast<std::size_t>(width * height), ' ') {}
 
-    int width() const { return width_; }
-    int height() const { return height_; }
+    [[nodiscard]] int width() const { return width_; }
+    [[nodiscard]] int height() const { return height_; }
 
     void clear() {
         std::fill(cells_.begin(), cells_.end(), ' ');
@@ -71,7 +73,7 @@ public:
         cells_[static_cast<std::size_t>(y * width_ + x)] = glyph;
     }
 
-    std::string str() const {
+    [[nodiscard]] std::string str() const {
         std::string out;
         out.reserve(static_cast<std::size_t>((width_ + 1) * height_));
         for (int y = 0; y < height_; ++y) {
@@ -119,7 +121,7 @@ public:
         }
     }
 
-    int bottom() const {
+    [[nodiscard]] int bottom() const {
         int maxY = 0;
         for (const auto& alien : aliens_) {
             maxY = std::max(maxY, alien.y);
@@ -146,7 +148,7 @@ private:
         int y;
     };
 
-    std::pair<int, int> horizontalBounds() const {
+    [[nodiscard]] std::pair<int, int> horizontalBounds() const {
         int minX = aliens_.front().x;
         int maxX = aliens_.front().x;
         for (const auto& alien : aliens_) {
