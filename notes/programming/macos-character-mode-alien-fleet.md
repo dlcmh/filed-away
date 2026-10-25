@@ -52,7 +52,7 @@ public:
     [[nodiscard]] int height() const { return height_; }
 
     void clear() {
-        std::fill(cells_.begin(), cells_.end(), ' ');
+        std::ranges::fill(cells_, ' ');
     }
 
     void drawBorder() {
@@ -356,6 +356,8 @@ The source game-loop file uses an interpolation factor, alpha, because its simul
 ## Why the classes are split this way
 
 `Canvas` is a pure output buffer. It uses `std::vector<char>` and bounds-checked `set` calls, so the motion code cannot write outside the canvas.
+
+`clear()` uses `std::ranges::fill(cells_, ' ')` rather than `std::fill(cells_.begin(), cells_.end(), ' ')`. The ranges form takes the container directly, so the begin and end iterators cannot be mismatched. This requires C++20, which the build command already selects.
 
 `Fleet` is a pure state machine over positions. It uses `std::vector<Alien>` and stores only the data it needs: x, y, and a direction. `update`, `draw`, and `bottom` are `const` where they do not modify state.
 
