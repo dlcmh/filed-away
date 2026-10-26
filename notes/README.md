@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-26 | [programming](programming/) | [A C++23 code review: formatting a grid without manual indexing](programming/cpp23-grid-serialization-review.md) |
 | 2026-10-26 | [programming](programming/) | [When to use SYSTEM in CMake include directories](programming/cmake-system-include-directories.md) |
 | 2026-10-25 | [programming](programming/) | [A beginner's guide to C++ class templates](programming/cpp-class-templates-beginner.md) |
 | 2026-10-25 | [programming](programming/) | [A macOS character-mode alien fleet in idiomatic C++](programming/macos-character-mode-alien-fleet.md) |
