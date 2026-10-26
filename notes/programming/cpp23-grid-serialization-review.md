@@ -142,6 +142,33 @@ The manual loop is not wrong. It is appropriate when:
 
 The main improvement is not a different algorithm. It is making the row boundary visible and eliminating arithmetic that the type system cannot check.
 
+## Post-mortem: why the missing chunk is not a blocker here
+
+The observation that macOS lacks `std::views::chunk` is correct. A follow-up DeepSeek conversation examined the workaround space: [shared conversation](https://chat.deepseek.com/share/c1ebok1n2nv6n3m4vd).
+
+![The original str() implementation using manual row indexing](images/cpp23-grid-str-screenshot.webp)
+
+*The original `str()` implementation that prompted the search for `views::chunk`.*
+
+`-std=c++23` selects the language mode. It does not guarantee that Apple's bundled libc++ implements every C++23 library facility. `std::views::chunk` comes from P2442R1, and it is still absent from Apple's libc++ at the time of writing. `std::views::chunk_by` is available, but it groups by a predicate, not by a fixed count; it is not a substitute for this use case.
+
+None of the alternatives justifies replacing the toolchain for one loop:
+
+- **Homebrew LLVM** may be newer than Apple Clang, but a tagged libc++ release is not guaranteed to contain P2442R1. Installing a second toolchain to obtain one view is disproportionate for this code.
+- **GCC** is not a practical route for a metal-cpp project. metal-cpp depends on Apple's Objective-C runtime, which is not a supported combination with GCC on macOS.
+- **range-v3** provides a portable chunking view, but it is an external dependency. It is reasonable when chunking is used throughout a codebase; it is unnecessary for a single grid-formatting function.
+
+For this function, the manual loop is the appropriate engineering choice:
+
+- The data is already a flat `std::vector<char>` with a fixed row width.
+- The transformation is a single forward pass over every element.
+- The output size is known in advance and reserved, so the loop performs no reallocation.
+- `append(pointer, count)` is exactly the operation required: copy a contiguous row of known length.
+- A lazy view would add iterator machinery without changing the memory behavior. Every row is consumed exactly once; there is no partial traversal, early exit, or view composition to justify laziness.
+- `views::chunk` improves this code only marginally, because the row operation is not reused elsewhere. If row-wise traversal becomes common, a small `for_each_row` helper or a local chunk view can encapsulate it. The standard view is a convenience, not a requirement.
+
+The broader lesson is to check the library feature, not just the language flag. `__cpp_lib_ranges_chunk` and the standard-library support tables answer the question directly. The simplest portable implementation that preserves the algorithm and allocation behavior is preferable to a toolchain change or a new dependency for one helper.
+
 ## Summary
 
 A C++23 rewrite can express the grid as `std::views::chunk(width_)`, but the standard library must implement that facility. On a toolchain without it, a `std::span`-based row loop is a safe fallback. The original code's `&cells_[...]` is pointer-to-element arithmetic, not pointer decay; `reserve` and the O(N) cost should be preserved either way.
