@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-26 | [programming](programming/) | [When to use SYSTEM in CMake include directories](programming/cmake-system-include-directories.md) |
 | 2026-10-25 | [programming](programming/) | [A beginner's guide to C++ class templates](programming/cpp-class-templates-beginner.md) |
 | 2026-10-25 | [programming](programming/) | [A macOS character-mode alien fleet in idiomatic C++](programming/macos-character-mode-alien-fleet.md) |
 | 2026-10-25 | [programming](programming/) | [An engine-free C++ graphics roadmap: stages, books, and resources](programming/engine-free-cpp-graphics-roadmap.md) |
