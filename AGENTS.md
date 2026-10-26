@@ -28,6 +28,20 @@ mathematically inconsistent", "truncates", "produces an implicit
 conversion"). This applies to hand-written notes and to titles/descriptions
 given to the converter; do not rewrite transcript bodies' original wording.
 
+## Preserving conversation images
+
+Screenshots and other images attached to a conversation are part of the note by
+default. Unless the user explicitly asks to omit them, download each attachment
+before its signed URL expires, store it under the note's `images/` directory,
+and reference it from the Markdown. This applies to converter output and to
+notes assembled from other share formats or manual extraction. The converter's
+`--skip-images` option is the explicit opt-out.
+
+If an image cannot be retrieved, state that in the note and report it to the
+user; do not silently drop it. Interface chrome — favicons, source-card
+thumbnails, avatars, and similar page decoration — is not conversation content
+and may be omitted.
+
 ## Adding a transcript from a chat HTML export
 
 1. Use the converter: `tools/ds2md.py <input.html> -o <folder>/` — setup,
