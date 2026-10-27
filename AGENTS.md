@@ -26,7 +26,8 @@ avoid anthropomorphic or colloquial framing — no "lies", "honest(ly)",
 State the behavior and the consequence directly instead ("is
 mathematically inconsistent", "truncates", "produces an implicit
 conversion"). This applies to hand-written notes and to titles/descriptions
-given to the converter; do not rewrite transcript bodies' original wording.
+given to the converter. Transcript bodies follow the separate light-copyedit
+rule below.
 
 ## Preserving conversation images
 
@@ -41,6 +42,18 @@ If an image cannot be retrieved, state that in the note and report it to the
 user; do not silently drop it. Interface chrome — favicons, source-card
 thumbnails, avatars, and similar page decoration — is not conversation content
 and may be omitted.
+
+## Editing transcript bodies
+
+Every transcript must be reviewed and, where necessary, lightly edited for
+spelling and grammar before it is committed. Correct obvious typographical
+errors, punctuation, capitalization, and grammar. Do not change meaning, tone,
+order, structure, code, commands, URLs, or technical claims, and do not
+summarize or rewrite passages. Preserve the speaker's wording otherwise.
+
+This applies to converter output and to transcripts assembled from other share
+formats or manual extraction. The converter remains the source for content; the
+light copyedit is a post-conversion step.
 
 ## Adding a transcript from a chat HTML export
 
@@ -67,8 +80,9 @@ and may be omitted.
    `<topic>/<slug>/` subfolder itself. Never rename or restructure existing
    notes — they are addressed by path.
 5. Verify before committing: the script's self-check must pass (math fidelity
-   MATCH, balanced `$`, image refs == files on disk), then skim the rendered
-   result for anything structural the checks can't see.
+   MATCH, balanced `$`, image refs == files on disk), apply the light
+   spelling/grammar copyedit described above, then skim the rendered result for
+   anything structural the checks can't see.
 6. Commit and push autonomously once checks pass (standing approval from the
    repo owner). Never `git add -A` — add only the new transcript folder (and
    tooling, if that is the task).
