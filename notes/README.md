@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-28 | [programming](programming/) | [Clearing a macOS character-mode screen from C++](programming/clearing-a-macos-character-mode-screen-from-c/) |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
 | 2026-10-28 | [programming](programming/) | [return 0 versus EXIT_SUCCESS in main](programming/return-0-versus-exit_success-in-main/) |
 | 2026-10-27 | [programming](programming/) | [C++ Rule of Five, copy semantics, and Rust ownership](programming/c-rule-of-five-copy-semantics-and-rust-ownership/) |
