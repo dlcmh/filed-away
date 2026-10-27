@@ -579,7 +579,7 @@ By sticking to Clang and writing clean, explicit loops, you get 99% of the reada
 
 ## User
 
-Like Chinese education and the Chinese language itself, this practice allows us to even grok the “classics”! Like Doom, etc. 😅
+Like Chinese education and the Chinese language itself, this practice allows us to even grok the “classics” like Doom, etc. 😅
 
 ---
 
