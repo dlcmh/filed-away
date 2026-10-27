@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
+| 2026-10-28 | [programming](programming/) | [return 0 versus EXIT_SUCCESS in main](programming/return-0-versus-exit_success-in-main/) |
 | 2026-10-27 | [programming](programming/) | [C++ Rule of Five, copy semantics, and Rust ownership](programming/c-rule-of-five-copy-semantics-and-rust-ownership/) |
 | 2026-10-27 | [programming](programming/) | [Calling a static member through an instance](programming/calling-a-static-member-through-an-instance/) |
 | 2026-10-27 | [programming](programming/) | [Clamping frame time with std::min](programming/clamping-frame-time-with-std-min.md) |
