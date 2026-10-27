@@ -2,9 +2,11 @@
 
 > A DeepSeek conversation on clang-tidy's reference-member warning in a GameLoop, deleting the four copy/move operations, and the meaning of temporaries and rvalues
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/wdv2i3t40ve4qqdjyk) on chat.deepseek.com. 3 questions, 3 answers. The source link expires when the conversation is deleted from DeepSeek.
+> Source: [shared conversation](https://chat.deepseek.com/share/wdv2i3t40ve4qqdjyk) on chat.deepseek.com. 4 questions and 4 answers across two threads. The source links expire when the conversations are deleted from DeepSeek.
 >
 > Recovered from the shared-conversation HTML export: web citations and the attached screenshot preserved.
+>
+> Continuation: [shared conversation](https://chat.deepseek.com/share/fezr4oalj3ru0dsmlq) on chat.deepseek.com. 1 question, 1 answer.
 
 ---
 
@@ -248,3 +250,61 @@ When the compiler sees you are assigning from an rvalue (a temporary object that
 In your `GameLoop`, moving the object doesn't "steal" anything useful. A reference is just an alias. If you "move" a `Terminal&`, the new `GameLoop` just gets a copy of the memory address of the `Terminal`.
 
 By deleting all four, you are creating a class that is **Strictly Non-Copyable and Non-Movable**. This is the perfect pattern for a top-level "Manager" or "Controller" class (like `GameLoop` or `Terminal`) that has a unique lifetime and owns references to sub-systems.
+
+---
+
+## User
+
+Changing to `Terminal::present...` allowed me to remove `terminal_`, but now I get this.
+
+---
+
+## DeepSeek
+
+You have just run headfirst into one of the most classic and confusing rules in C++: **The Rule of Five** (and how it interacts with the compiler).
+
+The good news is your design change to use `Terminal::present(canvas_)` was excellent—it made `GameLoop` much simpler and completely removed the need for that reference member.
+
+The warning you are seeing now is clang-tidy saying: *"Hey, you explicitly defined how this class is copied and moved, but you didn't tell me what to do when it is destroyed. That's inconsistent."*
+
+Here is exactly why this happens and how to fix it.
+
+### Why the warning appeared
+
+When you first had the `Terminal& terminal_` reference, clang-tidy was complaining about the reference member.
+
+Now that you removed it and just have `Fleet&` and `Canvas&`, the compiler sees a class with two reference members.\
+When you declare (or delete) *any* of the special member functions (like a copy constructor), C++ considers it a signal that you are managing resources manually. However, the C++ Core Guidelines state that if you define/delete **any** of the "Big Five" (Copy Constructor, Copy Assignment, Move Constructor, Move Assignment, or Destructor), you should define/delete **all five**.
+
+Because you deleted the four copy/move operations but didn't explicitly write a destructor, clang-tidy is flagging the inconsistency.
+
+### How to fix it
+
+You have two ways to make the warning go away.
+
+**Option 1: Explicitly default the destructor (Recommended)**\
+Since `GameLoop` doesn't own the `Fleet` or `Canvas` (it just holds references to them), there is nothing to clean up when `GameLoop` is destroyed. You can tell the compiler, "I know I deleted the others, but for the destructor, just do the normal empty thing."
+
+Add this right below your four deletes:
+
+```cpp
+~GameLoop() = default;
+```
+
+**Option 2: Rely on the "Rule of Zero"**\
+Actually, because your class *only* contains references (`Fleet&` and `Canvas&`), the compiler is smart enough to know how to handle them safely.\
+If you **remove all four of those `= delete;` lines entirely**, the compiler will automatically realize: *"I can't generate copy/move assignment operators because of the references, so I will just delete them automatically."*
+
+You can literally delete lines 158 through 161, and your class will still be strictly non-copyable and non-movable, and the warnings will disappear.
+
+*(However, keeping the explicit `= delete` lines is often better for documentation purposes so other humans reading your code know exactly what is going on. If you keep them, just add `~GameLoop() = default;`)*
+
+### A quick note on your code
+
+I notice in your `render()` function you wrote:\
+`Terminal::present(canvas_);`
+
+Just to be absolutely sure: `Terminal::present` is a `static` method (as seen in your very first screenshot). Because it's static, it doesn't need an instance of `Terminal` to run. Calling it like this is perfectly correct! It just formats the canvas and prints it to `std::cout` directly.
+
+**Summary:**\
+Add `~GameLoop() = default;` to line 162. It tells clang-tidy "I haven't forgotten the destructor, it just doesn't need to do anything."
