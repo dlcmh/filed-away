@@ -65,6 +65,8 @@ public:
 
     Terminal(const Terminal&) = delete;
     Terminal& operator=(const Terminal&) = delete;
+    Terminal(Terminal&&) = delete;
+    Terminal& operator=(Terminal&&) = delete;
 
     ~Terminal() {
         std::cout << "\x1b[0m\n" << std::flush;
@@ -93,7 +95,36 @@ The first line deletes the copy constructor. The second deletes the copy-assignm
 
 A `Terminal` is a resource guard. Its destructor resets terminal state, so there must be one live object responsible for that cleanup. If the object were copied, both copies would run their destructors. Cleanup could happen twice, or one copy could reset the terminal while another copy was still using it. If the guard were extended to own raw mode or an alternate screen, restoring twice or at the wrong time would be a correctness problem. Deleting the copy operations enforces a single owner.
 
-Because these copy operations are user-declared, the compiler does not generate implicit move operations either. The type is therefore neither copyable nor movable. That is appropriate for a guard with no transferable state. If moving were required, the class would need explicit move operations, with the copy operations still deleted.
+Deleting the copy operations alone also suppresses implicit move operations, so the type becomes neither copyable nor movable. That suppression is implicit and easy to overlook. Making it explicit accounts for all five special member functions and satisfies the clang-tidy check.
+
+### The Rule of Five and the special-member warning
+
+![clang-tidy warning that Terminal defines a non-default destructor without copy or move operations](images/ansi-terminal-special-members.webp)
+
+*The screenshot shows the diagnostic in an earlier version of the class, where the destructor clears the display. The warning concerns the declared special members, not the escape sequence.*
+
+The warning is `cppcoreguidelines-special-member-functions`, from a [DeepSeek discussion of this class](https://chat.deepseek.com/share/dmxllvvwio6dd2pgmz). A class that declares a non-default destructor but does not declare the copy and move operations receives it, because the C++ Core Guidelines' [Rule of Five (C.21)](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c21-if-you-define-or-delete-any-copy-move-or-destructor-function-define-or-delete-them-all) expects the set of special members to be considered together:
+
+- destructor;
+- copy constructor;
+- copy-assignment operator;
+- move constructor;
+- move-assignment operator.
+
+The complete non-copyable and non-movable form is:
+
+```cpp
+Terminal(const Terminal&) = delete;
+Terminal& operator=(const Terminal&) = delete;
+Terminal(Terminal&&) = delete;
+Terminal& operator=(Terminal&&) = delete;
+
+~Terminal() { /* restore terminal state */ }
+```
+
+`= default` on the copy and move operations would be appropriate only if copying or moving a `Terminal` were semantically valid. For this guard it is not: a copy would duplicate the cleanup responsibility. Deletion is the correct declaration for all four.
+
+The move operations need not appear as separate deleted declarations for the class to *behave* as non-movable; the language suppresses them when copying is deleted. The explicit declarations exist to document the design and to satisfy the Rule of Five check.
 
 ### Is the tilde required in every class?
 
