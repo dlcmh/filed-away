@@ -2,8 +2,11 @@
 
 > A DeepSeek conversation on the Rule of Five, shallow copies, pass-by-value versus references, Rule of Zero, and the corresponding Rust ownership choices
 >
-> Source: [shared conversation](https://chat.deepseek.com/share/yywun379lw02r7jner) on chat.deepseek.com. 15 questions, 15 answers. The source link expires when the conversation is deleted from DeepSeek.
-> Recovered from the shared-conversation HTML export: tables, web citations, and the attached screenshot preserved.
+> Source: [shared conversation](https://chat.deepseek.com/share/yywun379lw02r7jner) on chat.deepseek.com. 16 questions and 16 answers across two threads. The source links expire when the conversations are deleted from DeepSeek.
+>
+> Recovered from the shared-conversation HTML exports: tables, web citations, and the attached screenshot preserved.
+>
+> Continuation: [shared conversation](https://chat.deepseek.com/share/oz7c4jvbs72egltqep) on chat.deepseek.com. 1 question, 1 answer.
 
 ---
 
@@ -1245,3 +1248,85 @@ That is the C++ equivalent of a mid-life crisis. It usually involves:
 The good news is that this crisis passes. You come out the other side writing much cleaner, safer code, and you start to see why C++ is still kicking around 40+ years later. It's a language that lets you choose your own adventure — including the adventure of *"I'm just going to use `unique_ptr` and pretend I'm writing Rust."*
 
 Good luck with the terminal game. And remember: if the compiler ever gets too strict, just type `= default` and walk away. 🫡
+
+---
+
+## User
+
+“The absolute best way to avoid the Rule of Five entirely is the Rule of Zero.” In class `Terminal`, the Rule of Zero is not applicable, correct? We would still have to write out `= delete` for the four operations.
+
+---
+
+## DeepSeek
+
+**Correct.** In your specific `Terminal` class, the Rule of Zero is **not fully applicable** because your class isn't just holding data — it has **side effects on construction and destruction**. You have to explicitly tell the compiler what to do with the other four functions.
+
+Here's the precise breakdown of *why*, and where the line is.
+
+### Why Rule of Zero doesn't fully apply to `Terminal`
+
+The Rule of Zero says: *"If your class only contains members that already correctly manage their own resources (like `std::string`, `std::vector`, `unique_ptr`), then let the compiler generate all five special members for you."*
+
+Your `Terminal` class fails this test in two ways:
+
+1. **It has a custom destructor with side effects** (`std::cout << "\x1b[02J"`). The compiler cannot generate this for you — only you know that destroying a `Terminal` should clear the screen.
+2. **It has a custom constructor with side effects** (also printing the clear-screen sequence). Again, the compiler can't know this.
+
+So the moment you wrote `~Terminal() { ... }`, you broke out of Rule of Zero territory. The compiler now refuses to generate the move operations (per the historical rules we discussed), and Clang-Tidy correctly flags you to make an explicit decision.
+
+### What you actually have to write
+
+For your `Terminal`, the minimum honest set is:
+
+```cpp
+class Terminal {
+public:
+    Terminal()  { std::cout << "\x1b[02J"; }
+    ~Terminal() { std::cout << "\x1b[02J"; }
+
+    Terminal(const Terminal&)            = delete;
+    Terminal& operator=(const Terminal&) = delete;
+    Terminal(Terminal&&)                 = delete;
+    Terminal& operator=(Terminal&&)      = delete;
+
+    static void present(const Canvas& canvas) { /* ... */ }
+};
+```
+
+Those four `= delete` lines are not boilerplate you can avoid — they are **the actual design decision** ("a Terminal is unique and cannot be duplicated or moved"). If you left them out, the compiler would either generate dangerous copies or refuse to compile due to the deleted moves implied by the user-declared destructor, depending on the standard version. Either way, you need to be explicit.
+
+### The Rule of Zero version of `Terminal`
+
+If you truly wanted Rule of Zero, you'd have to redesign `Terminal` so it has **no side-effecting special members at all**. That means moving the RAII behavior into a separate type:
+
+```cpp
+// A rule-of-zero data holder — compiler generates everything
+struct TerminalState {
+    // Empty for now, but if you add fields later, they'll manage themselves
+};
+
+// A rule-of-five RAII wrapper (the "5%" class)
+class TerminalSession {
+    TerminalState state_;
+public:
+    TerminalSession()  { std::cout << "\x1b[02J"; }
+    ~TerminalSession() { std::cout << "\x1b[02J"; }
+    TerminalSession(const TerminalSession&) = delete;
+    // ... and the rest, still = delete
+};
+
+// Stateless utility — no special members needed at all
+namespace Terminal {
+    inline void present(const Canvas& c) { /* ... */ }
+}
+```
+
+Now `TerminalState` follows Rule of Zero, `Terminal::present` follows Rule of Zero (it's a free function with no state), and only `TerminalSession` — the one class that genuinely owns a lifetime-scoped side effect — carries the explicit deletions. That's the "isolate the sausage-making" pattern.
+
+### The honest summary
+
+- **Rule of Zero** = "let the compiler generate all five functions because my members are already safe."
+- **Your `Terminal`** = "I have side effects on construction/destruction, so I must be explicit about the other four."
+- The `= delete` lines are **not boilerplate** — they *are* your design, and they're the only thing preventing two `Terminal` objects from both trying to own the terminal's screen state.
+
+So your instinct is exactly right: for `Terminal`, Rule of Zero doesn't save you from writing the four Nos. The only way to avoid them is to shrink `Terminal` until it has no side effects, and move those side effects into a separate, explicitly non-copyable RAII class.
