@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-10-27 | [programming](programming/) | [C++ Rule of Five, copy semantics, and Rust ownership](programming/c-rule-of-five-copy-semantics-and-rust-ownership/) |
+| 2026-10-27 | [programming](programming/) | [Calling a static member through an instance](programming/calling-a-static-member-through-an-instance/) |
 | 2026-10-27 | [programming](programming/) | [Reference members, deleted copy operations, and rvalues](programming/reference-members-deleted-copy-operations-and-rvalues/) |
 | 2026-10-27 | [programming](programming/) | [SDL3 GPU, Metal, and modern C++ loops](programming/sdl3-gpu-metal-and-modern-c-loops/) |
 | 2026-10-27 | [programming](programming/) | [What `\x1b[2J` does in a C++ terminal program](programming/ansi-clear-screen-escape.md) |
