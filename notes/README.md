@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-27 | [programming](programming/) | [C++ Rule of Five, copy semantics, and Rust ownership](programming/c-rule-of-five-copy-semantics-and-rust-ownership/) |
 | 2026-10-27 | [programming](programming/) | [SDL3 GPU, Metal, and modern C++ loops](programming/sdl3-gpu-metal-and-modern-c-loops/) |
 | 2026-10-27 | [programming](programming/) | [What `\x1b[2J` does in a C++ terminal program](programming/ansi-clear-screen-escape.md) |
 | 2026-10-26 | [programming](programming/) | [A C++23 code review: formatting a grid without manual indexing](programming/cpp23-grid-serialization-review.md) |
