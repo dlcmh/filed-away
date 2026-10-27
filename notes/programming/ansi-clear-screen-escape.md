@@ -82,6 +82,19 @@ The `~Terminal` function is the destructor. It runs automatically when the `Term
 
 The destructor is the reason to use RAII here. The terminal is not put into raw mode or switched to an alternate screen, but it does receive a clear and an attribute reset. If those operations were left in `main`, every early return would need to repeat them.
 
+### Why the copy operations are deleted
+
+```cpp
+Terminal(const Terminal&) = delete;
+Terminal& operator=(const Terminal&) = delete;
+```
+
+The first line deletes the copy constructor. The second deletes the copy-assignment operator. `= delete` makes each function unavailable: any attempt to copy a `Terminal` or assign one `Terminal` to another is a compile-time error.
+
+A `Terminal` is a resource guard. Its destructor resets terminal state, so there must be one live object responsible for that cleanup. If the object were copied, both copies would run their destructors. Cleanup could happen twice, or one copy could reset the terminal while another copy was still using it. If the guard were extended to own raw mode or an alternate screen, restoring twice or at the wrong time would be a correctness problem. Deleting the copy operations enforces a single owner.
+
+Because these copy operations are user-declared, the compiler does not generate implicit move operations either. The type is therefore neither copyable nor movable. That is appropriate for a guard with no transferable state. If moving were required, the class would need explicit move operations, with the copy operations still deleted.
+
 ### Is the tilde required in every class?
 
 No. The tilde is only the syntax for declaring a destructor. If a class does not declare one, the compiler generates an implicit destructor that destroys its members.
