@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-28 | [programming](programming/) | [Basic C++ classes and member initializer lists](programming/basic-c-classes-and-member-initializer-lists/) |
 | 2026-10-28 | [programming](programming/) | [Clearing a macOS character-mode screen from C++](programming/clearing-a-macos-character-mode-screen-from-c/) |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
 | 2026-10-28 | [programming](programming/) | [constexpr string_view versus constexpr string](programming/constexpr-string_view-versus-constexpr-string/) |
