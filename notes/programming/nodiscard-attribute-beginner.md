@@ -47,6 +47,34 @@ Do not apply it to every function. If ignoring the result is a normal, intention
 
 A deliberate discard can be written as `static_cast<void>(expression)`. That documents the decision and suppresses the warning.
 
+## A concrete example: a status query
+
+clang-tidy often suggests `[[nodiscard]]` for a pure status query:
+
+```cpp
+class SdlGuard {
+public:
+    [[nodiscard]] bool ok() const { return ok_; }
+
+private:
+    bool ok_ = true;
+};
+```
+
+Calling `ok()` without using the result is almost certainly a mistake:
+
+```cpp
+sdl.ok();                     // typically warns: return value ignored
+if (!sdl.ok()) { /* ... */ }  // fine
+const bool good = sdl.ok();   // fine
+```
+
+The function exists only to report state. It has no side effect that would make the call meaningful on its own, so the return value is the point of the call. The same reasoning applies to `empty()`, `size()`, comparison operators, and functions that return an error code.
+
+It does not apply to every function that returns a value. A mutating function may return a secondary result that callers legitimately ignore, such as the number of erased elements. Marking such a function `[[nodiscard]]` would produce noise. The question is whether ignoring the result is a normal use or a likely bug.
+
+Many SDL3 functions that report failure, including initialization and window creation, are already marked `[[nodiscard]]`; that is why the `if (!SDL_Init(...))` pattern is necessary rather than merely stylistic.
+
 ## What the compiler does
 
 `[[nodiscard]]` requests a diagnostic; it does not force the caller to use the value. GCC and Clang typically report it under `-Wunused-result`, which is often enabled by `-Wall`. MSVC reports C4834. With `-Werror`, the warning becomes an error.
@@ -82,3 +110,7 @@ The [macOS alien-fleet tutorial](macos-character-mode-alien-fleet.md) marks `wid
 - Use it for queries, error codes, factories, and expensive results.
 - Avoid it where ignoring the result is intentional.
 - Put it on the declaration callers include.
+
+## Source
+
+- DeepSeek, [shared conversation on `ok()` and `[[nodiscard]]`](https://chat.deepseek.com/share/9j9l3f66uk4p6o686d).
