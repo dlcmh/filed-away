@@ -31,7 +31,14 @@ int main() {
 
     // 0 shader formats is valid for a clear-only program.
     // On macOS, SDL selects the Metal backend automatically.
-    SDL_GPUDevice* device = SDL_CreateGPUDevice(0, true, nullptr);
+    // <-- Old code caused: SDL_CreateGPUDevice failed: No supported SDL_GPU backend found! -->
+    // SDL_GPUDevice* device = SDL_CreateGPUDevice(0, true, nullptr);
+
+    // The issue stems from an incorrect assumption in your justsdl3 code. While your program only performs a clear operation and doesn't explicitly load any custom shaders, passing 0 as the format_flags parameter is invalid in SDL3.
+    // SDL3 chooses its underlying graphics driver (like Metal or Vulkan) by matching the platform's capabilities against the shader formats your application explicitly claims it can provide. By passing 0, you are telling SDL3, "My app supports zero shader formats," which forces the internal selector to conclude that no supported SDL_GPU backend found.
+    // The fix: Modify your SDL_CreateGPUDevice call to pass SDL_GPU_SHADERFORMAT_MSL (Metal Shading Language). This signals to SDL3 that your environment intends to interact with the native macOS backend.
+    SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_MSL, true, nullptr);
+
     if (!device) {
         SDL_Log("SDL_CreateGPUDevice failed: %s", SDL_GetError());
         SDL_DestroyWindow(window);
