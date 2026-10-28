@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-28 | [programming](programming/) | [Anonymous namespaces and file-local linkage in C++](programming/anonymous-namespaces-and-file-local-linkage.md) |
 | 2026-10-28 | [programming](programming/) | [Basic C++ classes and member initializer lists](programming/basic-c-classes-and-member-initializer-lists/) |
 | 2026-10-28 | [programming](programming/) | [Clearing a macOS character-mode screen from C++](programming/clearing-a-macos-character-mode-screen-from-c/) |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
