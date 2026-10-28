@@ -8,13 +8,14 @@ Notes in this collection, newest first.
 | 2026-10-28 | [programming](programming/) | [Basic C++ classes and member initializer lists](programming/basic-c-classes-and-member-initializer-lists/) |
 | 2026-10-28 | [programming](programming/) | [Clearing a macOS character-mode screen from C++](programming/clearing-a-macos-character-mode-screen-from-c/) |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
+| 2026-10-28 | [programming](programming/) | [Using SDL3 on macOS without Metal-cpp](programming/using-sdl3-on-macos-without-metal-cpp.md) |
 | 2026-10-28 | [programming](programming/) | [constexpr string_view versus constexpr string](programming/constexpr-string_view-versus-constexpr-string/) |
 | 2026-10-28 | [programming](programming/) | [return 0 versus EXIT_SUCCESS in main](programming/return-0-versus-exit_success-in-main/) |
+| 2026-10-28 | [programming](programming/) | [std::views::chunk on macOS, and when explicit loops are better](programming/std-views-chunk-on-macos-and-explicit-loops.md) |
 | 2026-10-27 | [programming](programming/) | [C++ Rule of Five, copy semantics, and Rust ownership](programming/c-rule-of-five-copy-semantics-and-rust-ownership/) |
 | 2026-10-27 | [programming](programming/) | [Calling a static member through an instance](programming/calling-a-static-member-through-an-instance/) |
 | 2026-10-27 | [programming](programming/) | [Clamping frame time with std::min](programming/clamping-frame-time-with-std-min.md) |
 | 2026-10-27 | [programming](programming/) | [Reference members, deleted copy operations, and rvalues](programming/reference-members-deleted-copy-operations-and-rvalues/) |
-| 2026-10-27 | [programming](programming/) | [SDL3 GPU, Metal, and modern C++ loops](programming/sdl3-gpu-metal-and-modern-c-loops/) |
 | 2026-10-27 | [programming](programming/) | [What `\x1b[2J` does in a C++ terminal program](programming/ansi-clear-screen-escape.md) |
 | 2026-10-26 | [programming](programming/) | [A C++23 code review: formatting a grid without manual indexing](programming/cpp23-grid-serialization-review.md) |
 | 2026-10-26 | [programming](programming/) | [Accessing vector elements: front, back, at, and operator[]](programming/cpp-vector-front-back-at.md) |
