@@ -171,6 +171,75 @@ This avoids the manual counter and the unchecked `operator[]` entirely. The inde
 
 `enumerate` solves the case where both the position and the element are required. It does not replace `.at()` for an independent indexed access, and it does not help with nested subscripts unless each level is separately available as a range.
 
+### Complete example
+
+```cpp
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+struct Particle {
+    double x, y;
+    double vx, vy;
+    bool alive = true;
+};
+
+int main() {
+    std::vector<Particle> particles = {
+        {0.0, 0.0, 1.0, 0.5, true},
+        {1.0, 1.0, 0.0, 0.0, false}, // dead; skipped
+        {2.0, 2.0, -1.0, 2.0, true},
+        {3.0, 3.0, 0.5, -0.5, true},
+    };
+
+    const double dt = 1.0;
+
+    for (auto [i, p] : particles | std::views::enumerate) {
+        if (!p.alive) {
+            std::cout << "skip  [" << i << "] (dead)\n";
+            continue;
+        }
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        std::cout << "update[" << i << "] -> (" << p.x << ", " << p.y << ")\n";
+    }
+
+    std::cout << "\nFinal state:\n";
+
+    for (auto [i, p] : particles | std::views::enumerate) {
+        std::cout << "  [" << i << "] pos=(" << p.x << ", " << p.y
+                  << ") alive=" << std::boolalpha << p.alive << "\n";
+    }
+}
+```
+
+The output shows that dead elements are untouched and live elements are modified in place:
+
+```text
+update[0] -> (1, 0.5)
+skip  [1] (dead)
+update[2] -> (1, 4)
+update[3] -> (3.5, 2.5)
+
+Final state:
+  [0] pos=(1, 0.5) alive=true
+  [1] pos=(1, 1) alive=false
+  [2] pos=(1, 4) alive=true
+  [3] pos=(3.5, 2.5) alive=true
+```
+
+The important details are:
+
+- `p` is a reference to the element inside `particles`, not a copy. Assigning `p.x` changes the vector element.
+- The index type is `std::ranges::range_difference_t<std::vector<Particle>>`, typically `std::ptrdiff_t`. It is signed, so comparisons against it do not produce signed/unsigned warnings.
+- Skipping a dead particle with `continue` leaves its position unchanged. The final state still shows `(1, 1)`.
+- If `particles` is `const`, `p` is a `const Particle&` and the loop supports read-only access.
+- The loop needs a C++23 compiler and a standard library that provides `views::enumerate`.
+
+This is the form used by the project's `tester` target in `apps/tetris/test.cpp`.
+
 ### Toolchain availability
 
 `std::views::enumerate` is a C++23 library feature guarded by `__cpp_lib_ranges_enumerate`, not merely by C++23 language support. Availability depends on which libc++ the build selects.
@@ -233,3 +302,4 @@ For a small board or configuration array, `.at()` is usually the right default. 
 
 - DeepSeek, [shared conversation on bounds checking](https://chat.deepseek.com/share/nwzzvlkr9lh054b8b0).
 - DeepSeek, [shared conversation on `std::views::enumerate`](https://chat.deepseek.com/share/i8du7wi6khk81sx1dm).
+- DeepSeek, [complete `std::views::enumerate` example](https://chat.deepseek.com/share/dx9qc6u5uu78dqz1wg).
