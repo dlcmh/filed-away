@@ -4,10 +4,12 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-29 | [programming](programming/) | [What inline does for a header function](programming/what-inline-does-for-a-header-function/) |
 | 2026-10-28 | [programming](programming/) | [Anonymous namespaces and file-local linkage in C++](programming/anonymous-namespaces-and-file-local-linkage.md) |
 | 2026-10-28 | [programming](programming/) | [Basic C++ classes and member initializer lists](programming/basic-c-classes-and-member-initializer-lists/) |
 | 2026-10-28 | [programming](programming/) | [Clearing a macOS character-mode screen from C++](programming/clearing-a-macos-character-mode-screen-from-c/) |
 | 2026-10-28 | [programming](programming/) | [Prefix and postfix increment in C++ loops](programming/prefix-and-postfix-increment-in-c-loops/) |
+| 2026-10-28 | [programming](programming/) | [The nodiscard attribute in C++: a short guide](programming/nodiscard-attribute-beginner.md) |
 | 2026-10-28 | [programming](programming/) | [Using SDL3 on macOS without Metal-cpp](programming/using-sdl3-on-macos-without-metal-cpp.md) |
 | 2026-10-28 | [programming](programming/) | [constexpr string_view versus constexpr string](programming/constexpr-string_view-versus-constexpr-string/) |
 | 2026-10-28 | [programming](programming/) | [return 0 versus EXIT_SUCCESS in main](programming/return-0-versus-exit_success-in-main/) |
@@ -27,7 +29,6 @@ Notes in this collection, newest first.
 | 2026-10-25 | [programming](programming/) | [An engine-free C++ graphics roadmap: stages, books, and resources](programming/engine-free-cpp-graphics-roadmap.md) |
 | 2026-10-25 | [programming](programming/) | [Getters and setters: when they help, when they don't, and what to use instead](programming/getters-setters-when-and-alternatives.md) |
 | 2026-10-25 | [programming](programming/) | [Naming the spiral-of-death clamp in a game loop](programming/clang-tidy-magic-number-game-loop/) |
-| 2026-10-25 | [programming](programming/) | [The nodiscard attribute in C++: a short guide](programming/nodiscard-attribute-beginner.md) |
 | 2026-10-25 | [programming](programming/) | [What alpha means in a fixed-timestep game loop](programming/fixed-timestep-game-loop-alpha.md) |
 | 2026-10-25 | [programming](programming/) | [When clang-tidy says a game-loop method could be static](programming/clang-tidy-game-loop-static-warning.md) |
 | 2026-10-25 | [programming](programming/) | [When to use a newline instead of std::endl in C++](programming/cpp-newline-vs-std-endl.md) |
