@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-29 | [programming](programming/) | [Bounds-checking nested std::array access](programming/bounds-checking-nested-std-array.md) |
 | 2026-10-29 | [programming](programming/) | [What inline does for a header function](programming/what-inline-does-for-a-header-function/) |
 | 2026-10-28 | [programming](programming/) | [Anonymous namespaces and file-local linkage in C++](programming/anonymous-namespaces-and-file-local-linkage.md) |
 | 2026-10-28 | [programming](programming/) | [Basic C++ classes and member initializer lists](programming/basic-c-classes-and-member-initializer-lists/) |
