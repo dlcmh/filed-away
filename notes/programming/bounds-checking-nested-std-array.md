@@ -150,6 +150,48 @@ for (Particle& p : particles) {
 
 There is no array subscript to warn about, and the range is defined by the container.
 
+## When both the index and the element are needed
+
+C++23 provides `std::views::enumerate`, which pairs each element with its index:
+
+```cpp
+#include <ranges>
+
+for (auto&& [index, p] : particles | std::views::enumerate) {
+    if (!p.alive) {
+        continue;
+    }
+
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+}
+```
+
+This avoids the manual counter and the unchecked `operator[]` entirely. The index has the range's difference type, typically `std::ptrdiff_t`, so it is signed and does not introduce a signed/unsigned comparison. The element binding refers to the original array element, which is why `auto&&` is used and why modifications to `p` affect `particles`.
+
+`enumerate` solves the case where both the position and the element are required. It does not replace `.at()` for an independent indexed access, and it does not help with nested subscripts unless each level is separately available as a range.
+
+### Availability caveat
+
+`std::views::enumerate` is a C++23 library feature. It is guarded by `__cpp_lib_ranges_enumerate`, not merely by C++23 language support. At the time of writing, Apple's libc++ does not define that macro, and the example above fails to compile with Apple Clang.
+
+A portable project can guard it:
+
+```cpp
+#if defined(__cpp_lib_ranges_enumerate)
+for (auto&& [index, p] : particles | std::views::enumerate) {
+    // ...
+}
+#else
+const std::ptrdiff_t count = std::ssize(particles);
+for (std::ptrdiff_t index = 0; index < count; ++index) {
+    // Proven-bounds access with a documented NOLINT.
+}
+#endif
+```
+
+For the current Apple Clang toolchain, the `std::ssize()` loop remains the usable option. `enumerate` is the cleaner choice only when the standard library provides it.
+
 ## When to use which
 
 | Situation | Approach |
@@ -157,6 +199,7 @@ There is no array subscript to warn about, and the range is defined by the conta
 | Ordinary access, index not proven | `.at()` or an explicit bounds check |
 | Signed index compared with a container size | `std::ssize(container)` |
 | Hot loop, no index needed | Range-based `for` or iterators |
+| Hot loop, index and element needed, `enumerate` available | `std::views::enumerate` |
 | Hot loop, index needed and bounds proven | `operator[]` with a named `NOLINT` and a documented invariant |
 
 For a small board or configuration array, `.at()` is usually the right default. For a measured inner loop over thousands of elements, prove the bounds once and keep the unchecked access localized.
@@ -169,7 +212,10 @@ For a small board or configuration array, `.at()` is usually the right default. 
 - Use `std::ssize()` when an index is signed.
 - Use unchecked access only when the loop has proven the bounds, and document the suppression.
 - Use iterators when the index itself is not needed.
+- Use `std::views::enumerate` when both index and element are needed and the library provides it;
+  otherwise use the `std::ssize()` loop.
 
 ## Reference
 
-- DeepSeek, [shared conversation](https://chat.deepseek.com/share/nwzzvlkr9lh054b8b0).
+- DeepSeek, [shared conversation on bounds checking](https://chat.deepseek.com/share/nwzzvlkr9lh054b8b0).
+- DeepSeek, [shared conversation on `std::views::enumerate`](https://chat.deepseek.com/share/i8du7wi6khk81sx1dm).
