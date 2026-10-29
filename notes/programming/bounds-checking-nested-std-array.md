@@ -167,15 +167,28 @@ for (auto&& [index, p] : particles | std::views::enumerate) {
 }
 ```
 
-This avoids the manual counter and the unchecked `operator[]` entirely. The index has the range's difference type, typically `std::ptrdiff_t`, so it is signed and does not introduce a signed/unsigned comparison. The element binding refers to the original array element, which is why `auto&&` is used and why modifications to `p` affect `particles`.
+This avoids the manual counter and the unchecked `operator[]` entirely. The index has the range's difference type, typically `std::ptrdiff_t`, so it is signed and does not introduce a signed/unsigned comparison. The element binding refers to the original array element; `auto&&` makes that explicit, and modifications to `p` affect `particles`. The project test uses `auto [i, p]` and mutates `p` successfully, confirming the reference behavior.
 
 `enumerate` solves the case where both the position and the element are required. It does not replace `.at()` for an independent indexed access, and it does not help with nested subscripts unless each level is separately available as a range.
 
-### Availability caveat
+### Toolchain availability
 
-`std::views::enumerate` is a C++23 library feature. It is guarded by `__cpp_lib_ranges_enumerate`, not merely by C++23 language support. At the time of writing, Apple's libc++ does not define that macro, and the example above fails to compile with Apple Clang.
+`std::views::enumerate` is a C++23 library feature guarded by `__cpp_lib_ranges_enumerate`, not merely by C++23 language support. Availability depends on which libc++ the build selects.
 
-A portable project can guard it:
+At the time of writing:
+
+- Apple Clang 21.0.0 with the system libc++ does not define the macro, and the loop fails to compile.
+- Homebrew LLVM 23.1.4 defines `__cpp_lib_ranges_enumerate` as `202302` and compiles the loop.
+
+The current CMake build directory for this project uses `/opt/homebrew/opt/llvm/bin/clang++`. The `tester` target, which compiles `apps/tetris/test.cpp`, builds and runs successfully. That test uses `std::views::enumerate`, so the feature is available in this project as configured.
+
+`CMakeLists.txt` itself only sets the C++23 language mode. It does not select Homebrew LLVM; that compiler is recorded in the CMake cache. A clean build using system Apple Clang would lose the feature. Configure such a build explicitly:
+
+```text
+-DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++
+```
+
+For a project that must support both toolchains, guard the feature:
 
 ```cpp
 #if defined(__cpp_lib_ranges_enumerate)
@@ -190,7 +203,7 @@ for (std::ptrdiff_t index = 0; index < count; ++index) {
 #endif
 ```
 
-For the current Apple Clang toolchain, the `std::ssize()` loop remains the usable option. `enumerate` is the cleaner choice only when the standard library provides it.
+With the current Homebrew LLVM configuration, the `std::views::enumerate` loop is the cleaner option when both the index and the element are needed. The `std::ssize()` loop remains the fallback for Apple Clang.
 
 ## When to use which
 
@@ -213,7 +226,8 @@ For a small board or configuration array, `.at()` is usually the right default. 
 - Use unchecked access only when the loop has proven the bounds, and document the suppression.
 - Use iterators when the index itself is not needed.
 - Use `std::views::enumerate` when both index and element are needed and the library provides it;
-  otherwise use the `std::ssize()` loop.
+  the current Homebrew LLVM build does, while system Apple Clang does not.
+- Fall back to the `std::ssize()` loop when `__cpp_lib_ranges_enumerate` is absent.
 
 ## Reference
 
