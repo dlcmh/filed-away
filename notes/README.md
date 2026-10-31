@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-10-31 | [programming](programming/) | [Will the compiler optimize away a local bool flag?](programming/compiler-optimizing-local-bool-flag.md) |
 | 2026-10-29 | [programming](programming/) | [Bounds-checking nested std::array access](programming/bounds-checking-nested-std-array.md) |
 | 2026-10-29 | [programming](programming/) | [What inline does for a header function](programming/what-inline-does-for-a-header-function/) |
 | 2026-10-28 | [programming](programming/) | [Anonymous namespaces and file-local linkage in C++](programming/anonymous-namespaces-and-file-local-linkage.md) |
