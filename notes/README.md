@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-03 | [programming](programming/) | [Default member initializers and constructor overloading in C++](programming/default-member-initializers-and-constructor-overloading.md) |
 | 2026-10-31 | [programming](programming/) | [Will the compiler optimize away a local bool flag?](programming/compiler-optimizing-local-bool-flag.md) |
 | 2026-10-29 | [programming](programming/) | [Bounds-checking nested std::array access](programming/bounds-checking-nested-std-array.md) |
 | 2026-10-29 | [programming](programming/) | [What inline does for a header function](programming/what-inline-does-for-a-header-function/) |
