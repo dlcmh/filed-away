@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-07 | [programming](programming/) | [SDL3 with CMake on macOS](programming/sdl3-cmake-macos.md) |
 | 2026-11-07 | [programming](programming/) | [Zensical: global install, Chinese search, and Cloudflare Pages](programming/zensical-global-install-and-chinese-search.md) |
 | 2026-11-06 | [programming](programming/) | [const auto versus an explicit enum type](programming/const-auto-versus-explicit-enum-type.md) |
 | 2026-11-04 | [programming](programming/) | [Drogon: a C++ web framework for existing C++ systems](programming/drogon-cpp-web-framework.md) |
