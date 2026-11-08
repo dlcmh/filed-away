@@ -37,6 +37,33 @@ default:
 
 The stacked labels are intentional: `'a'` and `'b'` fall through to the body below `'c'`. For a longer list, a data structure is preferable to a long condition.
 
+A complete membership example uses the same form to return a Boolean result:
+
+```cpp
+#include <iostream>
+
+bool isVowel(char ch) {
+    switch (ch) {
+    case 'a':
+    case 'e':
+    case 'i':
+    case 'o':
+    case 'u':
+        return true;
+    default:
+        return false;
+    }
+}
+
+int main() {
+    std::cout << std::boolalpha;
+    std::cout << isVowel('e') << '\n';  // true
+    std::cout << isVowel('x') << '\n';  // false
+}
+```
+
+The function returns `true` when `ch` matches one of the five stacked cases and `false` otherwise. This example recognizes lowercase vowels only.
+
 ## Fixed list: constexpr array and find
 
 C++20 provides `std::ranges::find`:
