@@ -108,7 +108,29 @@ if (isOneOf(code, 'a', 'b', 'c')) {
 }
 ```
 
-The `||` fold expands to the equivalent comparison chain. The references avoid copies for types such as `std::string`. This form is suitable when the list is written directly at the call site; a named `constexpr` array is easier to share across functions.
+The key line is `return ((value == args) || ...);`. It uses a **fold expression**, a C++17 feature that applies an operator across every element of a parameter pack.
+
+### How the || fold expands
+
+`typename... Args` declares a pack of types, and `const Args&... args` declares a matching pack of function parameters. At the call site, the compiler replaces each element of the pack with the corresponding argument. In `isOneOf(code, 'a', 'b', 'c')`, `T` is `char` and `Args` is `char, char, char`.
+
+The expression `((value == args) || ...)` is a unary right fold. The pattern is `(value == args)`, the operator is `||`, and the pack is `args`. The compiler expands the pattern once per argument and combines the results with `||`:
+
+```text
+isOneOf(code, 'a')           -> code == 'a'
+isOneOf(code, 'a', 'b')      -> code == 'a' || code == 'b'
+isOneOf(code, 'a', 'b', 'c') -> code == 'a' || (code == 'b' || code == 'c')
+```
+
+The parentheses in the last line show the right-fold grouping. For `||`, the result is the same as a flat chain of comparisons because logical OR is associative. The grouping would matter for a non-associative operator.
+
+A fold is not a runtime loop. The compiler expands it at compile time, so the resulting code contains only the needed comparisons. The C++17 requirement comes from the fold expression itself, not from the template.
+
+`constexpr` allows the compiler to evaluate `isOneOf` at compile time when the arguments are constants. `[[nodiscard]]` asks the compiler to warn when the result is ignored. The reference parameters avoid copies for types such as `std::string`.
+
+The same notation works with other operators. For example, `(numbers + ...)` expresses a right fold that adds all elements of a pack. A fold written as `(... || pattern)` would be a unary left fold; the position of `...` determines the grouping.
+
+This form is suitable when the list is written directly at the call site; a named `constexpr` array is easier to share across functions.
 
 ## Runtime container
 
