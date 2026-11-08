@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-11-08 | [programming](programming/) | [VSync and frame-rate targets in SDL3](programming/sdl3-vsync-and-frame-rate.md) |
+| 2026-11-08 | [programming](programming/) | [static, inline, and constexpr: what each one buys](programming/static-inline-and-constexpr-linkage.md) |
 | 2026-11-07 | [programming](programming/) | [SDL3 with CMake on macOS](programming/sdl3-cmake-macos.md) |
 | 2026-11-07 | [programming](programming/) | [Value-initialization and the other kinds of C++ initialization](programming/cpp-initialization-forms.md) |
 | 2026-11-07 | [programming](programming/) | [What `1000ULL` means in an FPS counter](programming/what-is-1000ull.md) |
