@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-11 | [programming](programming/) | [Trees and graphs: difficulty ladder and C++23 projects](programming/trees-and-graphs-difficulty-ladder-and-c23-projects/) |
 | 2026-11-09 | [programming](programming/) | [A `runcc` zsh function for CMake targets](programming/zsh-runcc-cmake-function.md) |
 | 2026-11-08 | [programming](programming/) | [Checking whether a value is one of several values in C++](programming/cpp-check-value-one-of-several.md) |
 | 2026-11-08 | [programming](programming/) | [VSync and frame-rate targets in SDL3](programming/sdl3-vsync-and-frame-rate.md) |
