@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-12 | [programming](programming/) | [AI accelerators, TileLang, RISC-V, and a learning syllabus](programming/ai-accelerators-tilelang-risc-v-and-a-learning-syllabus/) |
 | 2026-11-11 | [programming](programming/) | [Trees and graphs: difficulty ladder and C++23 projects](programming/trees-and-graphs-difficulty-ladder-and-c23-projects/) |
 | 2026-11-11 | [programming](programming/) | [Using GCC 16 alongside Apple Clang on macOS](programming/gcc16-alongside-apple-clang-macos.md) |
 | 2026-11-09 | [programming](programming/) | [A `runcc` zsh function for CMake targets](programming/zsh-runcc-cmake-function.md) |
