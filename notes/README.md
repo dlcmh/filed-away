@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-13 | [hardware](hardware/) | [M5 MacBook Pro versus Nvidia GPUs](hardware/m5-macbook-pro-versus-nvidia-gpus/) |
 | 2026-11-13 | [hardware](hardware/) | [PTO-ISA: a portable tile ISA for Ascend, with a CPU simulator](hardware/pto-isa-ascend-cpu-simulator.md) |
 | 2026-11-13 | [programming](programming/) | [Tensors and the 64 MB benchmark](programming/tensors-and-the-64-mb-benchmark/) |
 | 2026-11-13 | [programming](programming/) | [Why matrix multiplication is counted as 2n³ FLOPs](programming/matrix-multiplication-2n3-flops.md) |
