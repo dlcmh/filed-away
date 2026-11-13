@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-11-13 | [hardware](hardware/) | [PTO-ISA: a portable tile ISA for Ascend, with a CPU simulator](hardware/pto-isa-ascend-cpu-simulator.md) |
+| 2026-11-13 | [programming](programming/) | [Why matrix multiplication is counted as 2n³ FLOPs](programming/matrix-multiplication-2n3-flops.md) |
 | 2026-11-12 | [programming](programming/) | [AI accelerators, TileLang, RISC-V, and a learning syllabus](programming/ai-accelerators-tilelang-risc-v-and-a-learning-syllabus/) |
 | 2026-11-11 | [programming](programming/) | [Trees and graphs: difficulty ladder and C++23 projects](programming/trees-and-graphs-difficulty-ladder-and-c23-projects/) |
 | 2026-11-11 | [programming](programming/) | [Using GCC 16 alongside Apple Clang on macOS](programming/gcc16-alongside-apple-clang-macos.md) |
