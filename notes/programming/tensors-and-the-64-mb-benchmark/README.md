@@ -38,21 +38,34 @@ Tensors in PyTorch are very similar to NumPy arrays, but they have a superpower:
 
 The text explains this explicitly, but here is the step-by-step math based on the code:
 
-1. **The number of elements:**\
-   The code sets `size = 1 << 24`. This is a bitwise shift, which is a fast way of calculating $2^{24}$.\
-   $2^{24} = 16,777,216$ elements.
-2. **The size of each element:**\
-   The code specifically sets `dtype=torch.float32`. This means every single number in this tensor is a **32-bit floating-point number**.\
-   Because there are 8 bits in a byte, a 32-bit number takes up **4 bytes** of memory.
-3. **The total memory calculation:**\
-   To find the total size, you multiply the number of elements by the size of each element:
+#### 1. The number of elements
 
-   The total is $16{,}777{,}216 \times 4 = 67{,}108{,}864$ bytes.
+The code sets `size = 1 << 24`. This is a bitwise shift, which is a fast way of calculating $2^{24}$.
 
-4. **Converting to Megabytes (MB):**\
-   In computing, 1 Megabyte is typically calculated as $1024 \times 1024 = 1,048,576$ bytes.
+$2^{24} = 16,777,216$ elements.
 
-   Dividing by $1{,}048{,}576$ bytes per megabyte gives $64$ MB.
+#### 2. The size of each element
+
+The code specifically sets `dtype=torch.float32`. This means every single number in this tensor is a **32-bit floating-point number**.
+
+Because there are 8 bits in a byte, a 32-bit number takes up **4 bytes** of memory.
+
+#### 3. The total memory calculation
+
+To find the total size, multiply the number of elements by the size of each element:
+
+$$
+16{,}777{,}216 \text{ elements} \times 4 \text{ bytes/element}
+= 67{,}108{,}864 \text{ bytes}
+$$
+
+#### 4. Converting to Megabytes (MB)
+
+In computing, 1 Megabyte is typically calculated as $1024 \times 1024 = 1,048,576$ bytes.
+
+$$
+\frac{67{,}108{,}864}{1{,}048{,}576} = 64 \text{ MB}
+$$
 
 **Why the text cares about this:**\
 The text is highlighting that the `add` operation reads tensor `x` (64MB) and writes to tensor `y` (64MB). This means it has to move $64 + 64 = 128$ MB of data through the memory bus just to do a simple addition. This is why it is used to benchmark **memory bandwidth (GB/s)** rather than compute power (TFLOPS).
