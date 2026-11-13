@@ -12,7 +12,7 @@ The `2` comes from counting a multiplication and an addition separately. It is a
 
 ![2x2 matrix multiplication with one row and one column highlighted](images/matrix-multiply-2n3.png)
 
-*One output entry is the dot product of a row of A and a column of B. Each term contributes one multiplication and one addition.*
+*One output entry is the dot product of a row of A and a column of B: `n` multiplications and about `n` additions.*
 
 ## One output entry
 
@@ -22,12 +22,13 @@ For `C = A × B`, the entry at row `i`, column `j` is:
 C[i,j] = sum over k of A[i,k] * B[k,j]
 ```
 
-Computing that dot product takes:
+For one dot product:
 
-- `n` multiplications;
-- `n − 1` additions, if the accumulation starts with the first product.
+- perform `n` multiplications;
+- perform `n − 1` additions, or `n` additions if the accumulation starts with zero;
+- total roughly `2n` operations for that one output element.
 
-For a 2 × 2 example:
+The 2 × 2 example makes the arithmetic concrete:
 
 ```text
 C[0,0] = 1×5 + 2×7
@@ -35,25 +36,29 @@ C[0,0] = 1×5 + 2×7
        = 19
 ```
 
-That is two multiplications and one addition: three arithmetic operations for one output entry.
+That uses two multiplications and one addition. If the sum is written as `0 + 5 + 14`, it uses two additions instead, for a total of four operations. The simpler estimate is `2n = 4` operations for this entry.
 
-## Scaling to n × n
+For large `n`, the difference between `n − 1` and `n` additions is negligible. The convention uses `2n` operations per element.
 
-There are `n²` output entries.
+## Scaling to all n² elements
 
-Each entry needs `n` multiplications and approximately `n` additions. The conventional count treats each of the `n` terms as a multiply-add pair and charges two operations for it:
+The result matrix has `n²` elements. Using the simpler count of `2n` operations per element:
 
 ```text
-n² entries × n pairs × 2 operations = 2n³ operations
+n² elements × 2n operations per element = 2n³ operations
 ```
 
-The exact schoolbook count is slightly smaller:
+This is the standard estimate.
+
+The exact schoolbook count uses `n − 1` additions per dot product:
 
 ```text
 n³ multiplications + n²(n − 1) additions = 2n³ − n² operations
 ```
 
-For large `n`, the `n²` term is negligible compared with `n³`, so `2n³` is the usual estimate. For `n = 2`, the exact count is 12 operations, while `2n³` gives 16. The approximation is intended for large matrices, not tiny examples.
+If the accumulation includes an initial zero, the addition count is `n` per element, producing exactly `2n³` operations. The difference between the two counts is `n²`, which is negligible for large matrices.
+
+For `n = 2`, the exact count without an initial zero is 12 operations, while `2n³` gives 16. The approximation is intended for large matrices, not tiny examples.
 
 ## What a FLOP means
 
