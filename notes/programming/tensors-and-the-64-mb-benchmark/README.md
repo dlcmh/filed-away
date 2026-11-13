@@ -47,17 +47,12 @@ The text explains this explicitly, but here is the step-by-step math based on th
 3. **The total memory calculation:**\
    To find the total size, you multiply the number of elements by the size of each element:
 
-   $$
-   16{,}777{,}216 \text{ elements} \times 4 \text{ bytes/element}
-   = 67{,}108{,}864 \text{ bytes}
-   $$
+   The total is $16{,}777{,}216 \times 4 = 67{,}108{,}864$ bytes.
 
 4. **Converting to Megabytes (MB):**\
    In computing, 1 Megabyte is typically calculated as $1024 \times 1024 = 1,048,576$ bytes.
 
-   $$
-   \frac{67{,}108{,}864}{1{,}048{,}576} = 64 \text{ MB}
-   $$
+   Dividing by $1{,}048{,}576$ bytes per megabyte gives $64$ MB.
 
 **Why the text cares about this:**\
 The text is highlighting that the `add` operation reads tensor `x` (64MB) and writes to tensor `y` (64MB). This means it has to move $64 + 64 = 128$ MB of data through the memory bus just to do a simple addition. This is why it is used to benchmark **memory bandwidth (GB/s)** rather than compute power (TFLOPS).
