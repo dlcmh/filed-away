@@ -165,6 +165,66 @@ block_k / 8 = 32 / 8 = 4
 
 Each `ki` step handles eight values of the dot product, which is the native width of the SIMD-group matrix operation.
 
+### What a barrier does
+
+A barrier is a point where every thread in the threadgroup must arrive before any thread can proceed. It is both a wait gate and a memory fence for threadgroup memory.
+
+The need is concrete. All 128 threads cooperatively write `A_shared` and `B_shared`; each thread writes a different part of the tiles. A SIMD group must not begin reading the shared tile while another thread is still writing it. The barrier between the copy and the fragment loads guarantees that every write is complete and visible.
+
+A double-buffered iteration typically uses two barriers:
+
+1. After the producer threads finish writing a stage, before the consumer SIMD groups read it.
+2. After the consumer SIMD groups finish reading a stage, before the next iteration overwrites that stage.
+
+The generated Metal source uses `threadgroup_barrier(mem_flags::mem_threadgroup)`. This is a threadgroup-wide barrier, not a SIMD-group-only synchronization. All four SIMD groups participate.
+
+A barrier is a stall point: threads that arrive early wait for the slowest thread. That cost is one reason `block_k` matters. With `block_k = 32`, there are 64 `ko` iterations and roughly 128 barriers. With `block_k = 64`, there would be 32 iterations and roughly 64 barriers, but each shared-memory stage would double in size. The tradeoff is examined below.
+
+### Prologue, steady state, and epilogue
+
+The source loop has 64 logical iterations. With `T.Pipelined(..., num_stages=2)`, the generated code does not execute a literal 64-iteration `load; barrier; compute` loop. It is rewritten into three phases:
+
+```text
+prologue:      load tile 0
+
+steady state:  for ko = 0 ... 62:
+                   barrier          # buffer for tile ko + 1 is free
+                   load tile ko + 1 into the other buffer
+                   barrier          # tile ko + 1 is ready
+                   compute tile ko
+
+epilogue:      compute tile 63
+```
+
+The prologue fills the pipeline. The steady-state loop overlaps the next load with the current compute. The epilogue drains the last compute, which has no following load to overlap with it. There are 64 loads and 64 computes, but only 63 of the loads are overlapped with a compute.
+
+This is why the generated source contains a load before the loop, a loop whose bound is 63 rather than 64, and a final compute after the loop. It is the compiler's software-pipelining transformation of `T.Pipelined`, not a change to the mathematical work.
+
+### `A_shared` and `B_shared` are operands, not the two stages
+
+`A_shared` and `B_shared` are not two copies of one tile. They hold two different matrices that are both required for one multiply-accumulate:
+
+```text
+C_local += A_shared @ B_shared
+```
+
+`A_shared` is the A operand; `B_shared` is the B operand. One `ko` iteration needs both at the same time.
+
+The two buffers come from `num_stages=2`. The compiler duplicates the pair of operands so that one stage can be read while the other is written:
+
+| Pipeline slot | A operand | B operand |
+| --- | --- | --- |
+| Stage 0 | A tile for an even `ko` | B tile for that `ko` |
+| Stage 1 | A tile for the next `ko` | B tile for that `ko` |
+
+The total is still 16 KB:
+
+```text
+2 stages × (A_shared 4096 bytes + B_shared 4096 bytes) = 16,384 bytes
+```
+
+In the generated Metal source, this appears as one flat `buf_dyn_shmem[16384]` allocation with offsets for the stages. `A_shared` and `B_shared` are the logical operands; the doubling into stage 0 and stage 1 is the compiler's pipelining decision.
+
 ## Mapping the threadgroup onto the M5 GPU
 
 The threadgroup contains 128 threads. On the M5 GPU, Metal exposes a SIMD-group width of 32, so:
@@ -236,6 +296,31 @@ A useful hardware map is:
 | `T.copy` | Vectorized global-to-shared or fragment-to-global transfers |
 
 A threadgroup is not the same as a GPU core. The GPU scheduler places the 1024 threadgroups on its available cores, subject to shared-memory and register limits. Multiple threadgroups may occupy a core when resources allow.
+
+### On-chip memory is not the unified DRAM pool
+
+The phrase “on-chip” in `T.alloc_shared` refers to the GPU's threadgroup memory, a small SRAM scratchpad. It does not refer to the M5's 32 GB unified DRAM.
+
+Unified memory means that the CPU and GPU share one DRAM pool instead of having separate host and device copies. It does not mean that the GPU has no private fast memory. The GPU still has caches, threadgroup memory, and registers, all of which are physically on-chip and separate from the shared DRAM pool.
+
+| Storage | On-chip? | Part of the 32 GB unified pool? | Visible to |
+| --- | --- | --- | --- |
+| DRAM | No | Yes | CPU and GPU |
+| L2 cache | Yes | No | GPU |
+| Threadgroup memory (`A_shared`, `B_shared`) | Yes | No | One threadgroup |
+| Registers (`C_local` fragments) | Yes | No | One thread |
+
+The data flow in this kernel is:
+
+```text
+A, B in DRAM
+    → copied into threadgroup memory
+    → loaded into SIMD-group registers
+    → accumulated into C_local registers
+    → copied back to C in DRAM
+```
+
+`T.alloc_shared` targets the GPU here. It does not allocate Apple Neural Engine memory, and this lab does not run on the ANE. The ANE is a separate accelerator with its own undocumented on-chip memory hierarchy.
 
 ## Why the fragment shapes are 8 × 8
 
@@ -319,24 +404,128 @@ matmul 2048^3 fp16: 1.32 ms  13.05 TFLOPS
 
 The TileLang kernel is about 3.9 times slower than this particular PyTorch baseline. That is not a statement about the M5's peak capability. This is a first tiling kernel, and it leaves substantial performance on the table. Block size, register pressure, shared-memory layout, pipeline depth, occupancy, and Metal code generation all affect the result. The lab's purpose is to make the mapping visible and correct before optimizing it.
 
-## Why the code uses these block sizes
+## Why these block sizes?
 
-The values are not arbitrary:
+The choices are partly constrained by the hardware and partly tuned for this kernel. They are not sacred constants.
 
-- `block_m = 64`, `block_n = 64` give a 64 × 64 output tile.
-- `block_k = 32` gives a 32-wide slice of the reduction dimension.
-- The shared-memory footprint is `(64×32 + 32×64) × 2 bytes = 8 KB` per stage.
-- Two stages require 16 KB.
-- The accumulator tile is `64×64×4 bytes = 16 KB` of logical fragment storage.
-- `threads = 128` gives four SIMD groups, enough to cover a 2 × 2 arrangement of 32 × 32 quadrants.
+### Why `block_k = 32` rather than 64
 
-These choices balance work per threadgroup against shared-memory and register use. Larger tiles increase reuse but require more shared memory and registers; smaller tiles increase scheduling flexibility but reduce reuse.
+The most important constraint is the matrix-fragment width. On this Metal path, `simdgroup_multiply_accumulate` consumes 8 × 8 fragments, and the generated inner loop advances in steps of eight:
+
+```text
+ki = 0 ... block_k/8 - 1
+```
+
+For this kernel, `block_k` must therefore be a multiple of 8. The generated code has four `ki` steps and `A_local[4]` / `B_local[4]` because:
+
+```text
+32 / 8 = 4
+```
+
+The shared-memory cost of one stage is:
+
+```text
+A_shared: 64 × 32 × 2 bytes = 4096 bytes
+B_shared: 32 × 64 × 2 bytes = 4096 bytes
+one stage: 8192 bytes
+two stages: 16384 bytes = 16 KB
+```
+
+Changing to `block_k = 64` would produce:
+
+```text
+A_shared: 64 × 64 × 2 bytes = 8192 bytes
+B_shared: 64 × 64 × 2 bytes = 8192 bytes
+one stage: 16384 bytes
+two stages: 32768 bytes = 32 KB
+```
+
+That still fits, but it consumes twice the threadgroup memory and reduces the occupancy headroom for a kernel that is already not at peak. It would also halve the number of `ko` iterations and barriers:
+
+```text
+block_k = 32 → 64 iterations → roughly 128 barriers
+block_k = 64 → 32 iterations → roughly 64 barriers
+```
+
+Fewer barriers are beneficial, but the per-MAC reuse in this kernel does not improve: each A and B element is still used only across the output tile that consumes it. The extra shared-memory footprint is a real cost.
+
+A smaller `block_k = 16` would halve the shared memory but double the iterations:
+
+```text
+block_k = 16 → 128 iterations → roughly 256 barriers
+```
+
+Each barrier stalls the threadgroup. The copy and barrier overhead would be paid twice as often for less work per fill.
+
+`block_k = 32` is a practical balance: four 8-wide fragment steps per shared-memory fill, 8 KB per stage, and 16 KB for the two-stage pipeline. It is not the only legal value, but it fits this kernel's hardware and occupancy constraints well.
+
+### Why `block_m = block_n = 64`
+
+The output-tile choice has more freedom. The 64 × 64 tile contains:
+
+```text
+64 × 64 = 4096 fp32 accumulators
+4096 × 4 bytes = 16,384 bytes = 16 KB
+```
+
+It splits cleanly across four SIMD groups:
+
+```text
+4 SIMD groups → 2 × 2 quadrants
+each quadrant → 32 × 32 outputs
+each quadrant → 4 × 4 = 16 fragments of 8 × 8
+```
+
+That is why every SIMD group gets a full 32 × 32 quadrant and sixteen 8 × 8 fragments.
+
+A 32 × 32 output tile would still compile:
+
+```text
+accumulator: 1024 fp32 = 4 KB
+SIMD group quadrant: 16 × 16 = 2 × 2 = 4 fragments
+threadgroups: (2048/32) × (2048/32) = 64 × 64 = 4096
+```
+
+It would double the threadgroup count in each dimension, quadruple the total threadgroup count, and reduce reuse per tile. More threadgroups mean more global loads and more scheduling overhead.
+
+A 128 × 128 output tile would push the accumulator to:
+
+```text
+128 × 128 × 4 bytes = 65,536 bytes = 64 KB
+```
+
+That is a large register/fragment footprint, and the shared tiles would also grow. Register spills and reduced occupancy become likely.
+
+The 64 × 64 tile is the smallest square tile that gives each of the four SIMD groups a complete 32 × 32 quadrant. In other words, it is the smallest square that maps cleanly onto:
+
+```text
+4 SIMD groups × 32 × 32 quadrant per group
+```
+
+The 32 × 32 quadrant is itself the smallest arrangement that gives each SIMD group a 4 × 4 block of 8 × 8 fragments.
+
+### Could the kernel use 32 everywhere, or 32 and 16?
+
+Yes, both would compile. They are worse tradeoffs for this kernel:
+
+- `block_m = block_n = 32` gives each SIMD group only a 16 × 16 quadrant, four 8 × 8 fragments. It creates 4096 threadgroups and reduces reuse.
+- `block_k = 16` doubles the `ko` iterations and barriers, as described above.
+- `block_m = block_n = 32` with `block_k = 16` compounds both costs.
+
+The article's earlier wording that the values are “not arbitrary” was too strong. A more precise statement is:
+
+- `block_k` is constrained by the 8-wide fragment step and then tuned for shared-memory use, barrier frequency, and reuse.
+- `block_m` and `block_n` are softer choices, tuned so the four SIMD groups receive complete 32 × 32 quadrants.
 
 ## Summary
 
 - `bx` and `by` are x/y grid coordinates. `bx` selects the output column tile; `by` selects the output row tile.
 - `ko` is the k-offset/k-outer loop index. It walks the contraction dimension in 32-wide slices.
 - One threadgroup computes one 64 × 64 tile of `C`, accumulating over 64 k slices.
-- `A_shared` and `B_shared` hold the current 64 × 32 and 32 × 64 input tiles; `C_local` holds the output accumulator.
-- On the M5, one threadgroup is 4 SIMD groups. Each SIMD group computes a 32 × 32 quadrant with 8 × 8 matrix fragments.
+- A threadgroup contains 128 threads, which is four SIMD groups of 32 lanes. A lane is one thread.
+- `A_shared` and `B_shared` are the two matrix operands, not the two pipeline stages. `num_stages=2` duplicates each operand into two buffers, for 16 KB total.
+- A barrier synchronizes all 128 threads and fences threadgroup memory. Two barriers per double-buffered iteration are typical; their cost is part of why `block_k` is not larger.
+- `T.Pipelined` rewrites the 64-iteration source loop into a prologue, a 63-iteration steady-state loop, and an epilogue.
+- `block_k = 32` is constrained by the 8-wide fragment step and tuned for shared memory and barrier frequency. `block_m = block_n = 64` is a softer choice that gives each SIMD group a full 32 × 32 quadrant.
+- Threadgroup memory, caches, and registers are on-chip and distinct from the 32 GB unified DRAM pool. `T.alloc_shared` in this lab targets the GPU, not the ANE.
 - The lab is correct and completes in 5.11 ms at 3.36 TFLOPS on this machine. It is a starting point for understanding and optimizing a tiled GEMM, not a peak-performance implementation.
