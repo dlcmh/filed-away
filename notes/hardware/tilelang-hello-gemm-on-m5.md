@@ -193,6 +193,36 @@ The generated Metal source confirms this arrangement:
 - `simdgroup_multiply_accumulate` is the matrix operation.
 - `__simd_group_id` selects which of the four SIMD groups is executing.
 
+### Threads, lanes, SIMD groups, and threadgroups
+
+These terms describe different levels of the same execution hierarchy:
+
+| Term | Size in this kernel | Meaning |
+| --- | --- | --- |
+| Thread | 1 | One execution context with its own registers. A lane is one thread considered by its position inside a SIMD group. |
+| SIMD group | 32 threads | A group of threads that executes matrix operations cooperatively. Metal calls this a SIMD group; other systems call it a warp or a wavefront. |
+| Threadgroup | 128 threads = 4 SIMD groups | A Metal scheduling and cooperation unit. Its threads share threadgroup memory and synchronization barriers. |
+| GPU core | Hardware | Executes one or more threadgroups, subject to resource limits. It is not a software type in the TileLang program. |
+
+In `T.Kernel(..., threads=128)`, the number is the number of threads in each threadgroup, not the total number of threads in the launch.
+
+One threadgroup is **not** one SIMD group. In this kernel, one threadgroup contains four SIMD groups:
+
+```text
+128 threads / 32 threads per SIMD group = 4 SIMD groups
+```
+
+One lane is one thread. “Lane” is the name for a thread's position within its SIMD group. The 32 lanes of a SIMD group execute the same matrix instruction cooperatively; a single lane does not hold a complete 8 × 8 matrix.
+
+The launch contains:
+
+```text
+1024 threadgroups × 128 threads = 131,072 threads
+1024 threadgroups × 4 SIMD groups = 4096 SIMD groups
+```
+
+Each threadgroup owns 4096 output values, so each of its 128 threads is responsible for 32 values on average. An 8 × 8 fragment contains 64 values distributed across 32 lanes, or two values per lane.
+
 A useful hardware map is:
 
 | TileLang object | M5 / Metal meaning |
