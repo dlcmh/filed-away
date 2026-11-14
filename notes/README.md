@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-14 | [hardware](hardware/) | [How TileLang's hello GEMM maps onto the M5 GPU](hardware/tilelang-hello-gemm-on-m5.md) |
 | 2026-11-13 | [hardware](hardware/) | [M5 MacBook Pro versus Nvidia GPUs](hardware/m5-macbook-pro-versus-nvidia-gpus/) |
 | 2026-11-13 | [hardware](hardware/) | [PTO-ISA: a portable tile ISA for Ascend, with a CPU simulator](hardware/pto-isa-ascend-cpu-simulator.md) |
 | 2026-11-13 | [programming](programming/) | [Tensors and the 64 MB benchmark](programming/tensors-and-the-64-mb-benchmark/) |
