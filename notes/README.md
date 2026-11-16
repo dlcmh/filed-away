@@ -5,6 +5,7 @@ Notes in this collection, newest first.
 | Last updated | Topic | Note |
 | --- | --- | --- |
 | 2026-11-17 | [hardware](hardware/) | [Tile programming, Nvidia, and the DeepSeek–Huawei efficiency challenge](hardware/tile-programming-nvidia-and-the-deepseek-huawei-efficiency-challenge.md) |
+| 2026-11-17 | [hardware](hardware/) | [TileLang, Flash Attention, and the durability of the CUDA moat](hardware/tilelang-flash-attention-and-the-durability-of-the-cuda-moat.md) |
 | 2026-11-16 | [programming](programming/) | [Squaring and integer powers in C++](programming/squaring-and-integer-powers-in-cpp.md) |
 | 2026-11-16 | [programming](programming/) | [What `do_not_optimize` does, and how to read its inline assembly](programming/do-not-optimize-inline-asm.md) |
 | 2026-11-16 | [programming](programming/) | [Why clangd accepts `size_t` without `std::`](programming/size-t-global-vs-std.md) |
