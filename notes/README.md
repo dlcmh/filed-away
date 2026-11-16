@@ -7,6 +7,7 @@ Notes in this collection, newest first.
 | 2026-11-16 | [programming](programming/) | [Squaring and integer powers in C++](programming/squaring-and-integer-powers-in-cpp.md) |
 | 2026-11-16 | [programming](programming/) | [What `do_not_optimize` does, and how to read its inline assembly](programming/do-not-optimize-inline-asm.md) |
 | 2026-11-16 | [programming](programming/) | [Why clangd accepts `size_t` without `std::`](programming/size-t-global-vs-std.md) |
+| 2026-11-16 | [programming](programming/) | [`Fn&&`, value categories, and `explicit`: reading a clang-tidy diagnostic](programming/fn-forwarding-reference-and-explicit.md) |
 | 2026-11-14 | [hardware](hardware/) | [How TileLang's hello GEMM maps onto the M5 GPU](hardware/tilelang-hello-gemm-on-m5.md) |
 | 2026-11-13 | [hardware](hardware/) | [M5 MacBook Pro versus Nvidia GPUs](hardware/m5-macbook-pro-versus-nvidia-gpus/) |
 | 2026-11-13 | [hardware](hardware/) | [PTO-ISA: a portable tile ISA for Ascend, with a CPU simulator](hardware/pto-isa-ascend-cpu-simulator.md) |
