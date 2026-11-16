@@ -1,0 +1,10 @@
+{
+  "name": "filed-away-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Share-page capture helper for tools/ds2md.py",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "playwright": "^1.65.1"
+  }
+}

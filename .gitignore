@@ -1,6 +1,7 @@
-# ZCode client session state — never commit
+# Legacy client session state — never commit
 .zcode/
 
 .DS_Store
 
 __pycache__/
+tools/node_modules/

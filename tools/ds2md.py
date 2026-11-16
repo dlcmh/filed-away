@@ -124,6 +124,11 @@ def render_inline(node, in_cell=False):
         # GitHub's markdown layer eats backslash escapes before text is shown;
         # restore them so e.g. the model's raw \( ... \) survives literally.
         raw = re.sub(r"\\(?=[" + re.escape(ESCAPABLE) + r"])", lambda m: "\\\\", raw)
+        # A dollar sign in model prose is literal text (money, a cost, a shell
+        # variable); real math always arrives through the katex annotation. Left
+        # unescaped it opens an inline-math span and corrupts everything up to
+        # the next dollar on the line.
+        raw = re.sub(r"(?<!\\)\$", r"\\$", raw)
         if SPECIAL.search(raw):
             warn(f"markdown-special chars in plain text: {raw.strip()[:90]!r}")
         return raw
@@ -649,10 +654,13 @@ def run_checks(md, src_tex, images_dir, args):
     # Literal dollars in fenced code (e.g. a shell prompt) are not inline math.
     prose = re.sub(r"```.*?```", "", md, flags=re.S)
     expected = 2 * len(MATH_SLOTS)
-    good = prose.count("$") == expected
-    print(f"check inline $ balance ({prose.count('$')} == {expected}): {'OK' if good else 'FAIL'}")
+    # Escaped dollars (\$) are literal text, not delimiters.
+    dollars = len(re.findall(r"(?<!\\)\$", prose))
+    good = dollars == expected
+    print(f"check inline $ balance ({dollars} == {expected}): {'OK' if good else 'FAIL'}")
     ok &= good
-    odd = [i + 1 for i, l in enumerate(prose.split("\n")) if l.count("$") % 2 == 1]
+    odd = [i + 1 for i, l in enumerate(prose.split("\n"))
+           if len(re.findall(r"(?<!\\)\$", l)) % 2 == 1]
     good = not odd
     print(f"check per-line $ pairing: {'OK' if good else 'FAIL ' + str(odd[:5])}")
     ok &= good
