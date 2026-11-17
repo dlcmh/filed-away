@@ -6,6 +6,7 @@ Notes in this collection, newest first.
 | --- | --- | --- |
 | 2026-11-17 | [hardware](hardware/) | [Ascend 960DT–980 against Vera Rubin: bandwidth and packaging over FLOPS](hardware/ascend-960dt-980-versus-vera-rubin-bandwidth-and-packaging/) |
 | 2026-11-17 | [programming](programming/) | [How `AlignedAllocator` works](programming/how-aligned-allocator-works.md) |
+| 2026-11-17 | [programming](programming/) | [Saying what you mean: `explicit`, free functions, and why kernels stay in C](programming/saying-what-you-mean-explicit-free-functions-and-kernels-in-c.md) |
 | 2026-11-17 | [hardware](hardware/) | [Tile programming, Nvidia, and the DeepSeek–Huawei efficiency challenge](hardware/tile-programming-nvidia-and-the-deepseek-huawei-efficiency-challenge.md) |
 | 2026-11-17 | [hardware](hardware/) | [TileLang, Flash Attention, and the durability of the CUDA moat](hardware/tilelang-flash-attention-and-the-durability-of-the-cuda-moat.md) |
 | 2026-11-16 | [programming](programming/) | [Squaring and integer powers in C++](programming/squaring-and-integer-powers-in-cpp.md) |
