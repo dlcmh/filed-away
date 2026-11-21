@@ -4,6 +4,7 @@ Notes in this collection, newest first.
 
 | Last updated | Topic | Note |
 | --- | --- | --- |
+| 2026-11-21 | [general](general/) | [Chaoshan by rail: an 18-night food and culture route](general/chaoshan-by-rail-an-18-night-food-and-culture-route/) |
 | 2026-11-17 | [hardware](hardware/) | [Ascend 960DT–980 against Vera Rubin: bandwidth and packaging over FLOPS](hardware/ascend-960dt-980-versus-vera-rubin-bandwidth-and-packaging/) |
 | 2026-11-17 | [programming](programming/) | [How `AlignedAllocator` works](programming/how-aligned-allocator-works.md) |
 | 2026-11-17 | [programming](programming/) | [Saying what you mean: `explicit`, free functions, and why kernels stay in C](programming/saying-what-you-mean-explicit-free-functions-and-kernels-in-c.md) |
